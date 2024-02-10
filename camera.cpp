@@ -3,13 +3,14 @@
 #include "painter.h"
 #include <iostream>
 #include <limits>
-
 using std::string;
+
+#define _DEBUG
 
 static float floatMax = std::numeric_limits<float>::max();
 
-Camera::Camera(int width, int height) : screenSize(width, height), image(width, height, 32),
-position(), up(0, 1, 0), lookAt(0, 0, 1), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
+Camera::Camera(int width, int height, Vector3 position, Vector3 rotation) : screenSize(width, height), image(width, height, 32),
+transform(position, rotation), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[height];
     for (int i = 0; i < screenSize.y; i++)
@@ -20,6 +21,13 @@ position(), up(0, 1, 0), lookAt(0, 0, 1), fieldOfView(60), nearClipPlane(0.3), f
             zBuffer[i][j] = floatMax;
         }
     }
+}
+
+Camera::~Camera()
+{
+    for (int i = 0; i < screenSize.y; i++)
+        delete zBuffer[i];
+    delete zBuffer;
 }
 
 void Camera::Render(Object& object)
@@ -37,44 +45,27 @@ void Camera::Render(Object& object)
 
 void Camera::VertexTransform(Object& object)
 {
+#ifdef DEBUG
     int nVerts = object.model.nVerts();
     vertexBuffer.reserve(nVerts);
+    std::cerr << "Point :\t" << object.model[0] << "\n";
+    std::cerr << "R :\t" << object.transform.rotation << "\n";
+    std::cerr << "mR :\t" << Matrix4x4::Rotate(object.transform.rotation) << "\n";
     // 模型坐标到世界坐标
     Matrix4x4 mLTW = object.transform.localToWorldMatrix();
+    std::cerr << "mLTW :\t" << mLTW << "\n";
     for (int i = 0; i < nVerts; i++)
         vertexBuffer.push_back(mLTW * Vector4(object.model[i], 1));
+    std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
     // 世界空间到观察空间
-    Matrix4x4 mRView = Matrix4x4({
-        Vector4(-lookAt ^ up, 0),
-        Vector4(up, 0),
-        Vector4(lookAt, 0),
-        {0, 0, 0, 1}
-    });
-    Matrix4x4 mTView = Matrix4x4({
-        {1, 0, 0, -position.x},
-        {0, 1, 0, -position.y},
-        {0, 0, 1, -position.z},
-        {0, 0, 0, 1}
-    });
-    Matrix4x4 mWorldToViewPoint = mRView * mTView;
-    vertexBuffer = mWorldToViewPoint * vertexBuffer;
+    Matrix4x4 mView = Matrix4x4::LookAt(transform.position, transform.forward(), transform.up());
+    std::cerr << "mView :\t" << mView << "\n";
+    vertexBuffer = mView * vertexBuffer;
+    std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
     // 观察空间到投影空间
     float aspect = (float)screenSize.x / screenSize.y; // 横纵比
-    float top = nearClipPlane * std::tan(fieldOfView / 2 * M_PI / 180);
-    float right = top * aspect;
-    Matrix4x4 mOrth = Matrix4x4({
-        {1 / right, 0, 0, 0},
-        {0, 1 / top, 0, 0},
-        {0, 0, 2 / (farClipPlane - nearClipPlane), -(nearClipPlane + farClipPlane) / (farClipPlane - nearClipPlane)},
-        {0, 0, 0, 1}
-    });
-    Matrix4x4 mProj = mOrth * Matrix4x4({
-        {nearClipPlane, 0, 0, 0},
-        {0, nearClipPlane, 0, 0},
-        {0, 0, nearClipPlane + farClipPlane, -nearClipPlane * farClipPlane},
-        {0, 0, 1, 0}
-    });
-    vertexBuffer = mProj * vertexBuffer;
+    Matrix4x4 mPersp = Matrix4x4::Perspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
+    vertexBuffer = mPersp * vertexBuffer;
     // 投影空间到NDC
     for (int i = 0; i < nVerts; i++)
         vertexBuffer[i] = vertexBuffer[i] / vertexBuffer[i].w;
@@ -83,9 +74,34 @@ void Camera::VertexTransform(Object& object)
         {screenSize.x / 2.0f, 0, 0, screenSize.x / 2.0f},
         {0, screenSize.y / 2.0f, 0, screenSize.y / 2.0f},
         {0, 0, 1, 0},
-        {0, 0, 0, 1}
-    });
+        {0, 0, 0, 1}});
     vertexBuffer = mScreen * vertexBuffer;
+    std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
+#else
+    int nVerts = object.model.nVerts();
+    vertexBuffer.reserve(nVerts);
+    // 模型坐标到世界坐标
+    Matrix4x4 mLTW = object.transform.localToWorldMatrix();
+    for (int i = 0; i < nVerts; i++)
+        vertexBuffer.push_back(mLTW * Vector4(object.model[i], 1));
+    // 世界空间到观察空间
+    Matrix4x4 mView = Matrix4x4::LookAt(transform.position, transform.forward(), transform.up());
+    vertexBuffer = mView * vertexBuffer;
+    // 观察空间到投影空间
+    float aspect = (float)screenSize.x / screenSize.y; // 横纵比
+    Matrix4x4 mPersp = Matrix4x4::Perspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
+    vertexBuffer = mPersp * vertexBuffer;
+    // 投影空间到NDC
+    for (int i = 0; i < nVerts; i++)
+        vertexBuffer[i] = vertexBuffer[i] / vertexBuffer[i].w;
+    // NDC到屏幕空间
+    Matrix4x4 mScreen = Matrix4x4({
+        {screenSize.x / 2.0f, 0, 0, screenSize.x / 2.0f},
+        {0, screenSize.y / 2.0f, 0, screenSize.y / 2.0f},
+        {0, 0, 1, 0},
+        {0, 0, 0, 1}});
+    vertexBuffer = mScreen * vertexBuffer;
+#endif
 }
 
 void Camera::Rasterization(Vector3 p1, Vector3 p2, Vector3 p3, Color c)
@@ -154,6 +170,11 @@ void Camera::Output()
     std::cin >> imageName;
     image.Write(imagePath + imageName + ".bmp");
     // 输出深度缓冲图像
+    char c;
+    std::cout << "Output Z-Buffer Image?(Y/N)" << std::endl;
+    std::cin >> c;
+    if (c == 'N')
+        return;
     Bitmap zBufferImage(screenSize.x, screenSize.y, 32);
     for (int i = 0; i < screenSize.y; i++)
     {

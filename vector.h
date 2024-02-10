@@ -79,6 +79,13 @@ T operator ^(const Vec2<T>& a, const Vec2<T>& b)
 }
 
 template<typename T>
+std::ostream& operator <<(std::ostream& s, const Vec2<T>& v)
+{
+    s << "(" << v.x << ", " << v.y << ")";
+    return s;
+}
+
+template<typename T>
 struct Vec3
 {
     T x, y, z;
@@ -163,7 +170,7 @@ std::istringstream& operator >>(std::istringstream& s, Vec3<T>& v)
 }
 
 template<typename T>
-std::ostream& operator <<(std::ostream& s, Vec3<T>& v)
+std::ostream& operator <<(std::ostream& s, const Vec3<T>& v)
 {
     s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
     return s;
@@ -240,5 +247,9 @@ struct Vector4
     friend Vector4 operator /(const Vector4& a, float f)
     {
         return Vector4(a.x / f, a.y / f, a.z / f, a.w / f);
+    }
+    friend std::ostream& operator <<(std::ostream& s, Vector4 v)
+    {
+        return s << "(" << v.x << ",\t" << v.y << ",\t" << v.z << ",\t" << v.w << ")";
     }
 };

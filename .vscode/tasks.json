@@ -14,6 +14,8 @@
                 "${fileDirname}\\transform.cpp",
                 "${fileDirname}\\object.cpp",
                 "${fileDirname}\\camera.cpp",
+                "${fileDirname}\\quaternion.cpp",
+                "${fileDirname}\\matrix.cpp",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
