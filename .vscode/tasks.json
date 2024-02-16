@@ -16,6 +16,9 @@
                 "${fileDirname}\\camera.cpp",
                 "${fileDirname}\\quaternion.cpp",
                 "${fileDirname}\\matrix.cpp",
+                "${fileDirname}\\light.cpp",
+                "${fileDirname}\\scene.cpp",
+                "${fileDirname}\\vector.cpp",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],

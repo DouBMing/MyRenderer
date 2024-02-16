@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "scene.h"
 #include "matrix.h"
 #include "painter.h"
 #include <iostream>
@@ -9,8 +10,22 @@ using std::string;
 
 static float floatMax = std::numeric_limits<float>::max();
 
-Camera::Camera(int width, int height, Vector3 position, Vector3 rotation) : screenSize(width, height), image(width, height, 32),
-transform(position, rotation), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
+Camera::Camera(int width, int height) : screenSize(width, height), image(width, height, 32),
+    fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
+{
+    zBuffer = new float*[height];
+    for (int i = 0; i < screenSize.y; i++)
+    {
+        zBuffer[i] = new float[width];
+        for (int j = 0; j < screenSize.x; j++)
+        {
+            zBuffer[i][j] = floatMax;
+        }
+    }
+}
+
+Camera::Camera(int width, int height, Vector3 position, Vector3 rotation) : Object(position, rotation),
+    screenSize(width, height), image(width, height, 32), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[height];
     for (int i = 0; i < screenSize.y; i++)
@@ -30,32 +45,36 @@ Camera::~Camera()
     delete zBuffer;
 }
 
-void Camera::Render(Object& object)
+void Camera::Render()
 {
-    // 顶点变换
-    VertexTransform(object);
-    // 采样并绘制
-    for (int i = 0; i < object.model.nFaces(); i++)
+    for (int i = 0; i < scene.models.size(); i++)
     {
-        std::vector<int> face = object.model.face(i);
-        Rasterization(vertexBuffer[face[0]], vertexBuffer[face[1]], vertexBuffer[face[2]], Color::GetRandomColor());
+        Render(scene.models[i]);
     }
     Output();
 }
 
-void Camera::VertexTransform(Object& object)
+void Camera::Render(Model& model)
+{
+    // 顶点变换
+    VertexTransform(model);
+    // 采样并绘制
+    Rasterization(model);
+}
+
+void Camera::VertexTransform(Model& model)
 {
 #ifdef DEBUG
-    int nVerts = object.model.nVerts();
+    int nVerts = model.nVerts();
     vertexBuffer.reserve(nVerts);
-    std::cerr << "Point :\t" << object.model[0] << "\n";
-    std::cerr << "R :\t" << object.transform.rotation << "\n";
-    std::cerr << "mR :\t" << Matrix4x4::Rotate(object.transform.rotation) << "\n";
+    std::cerr << "Point :\t" << model[0] << "\n";
+    std::cerr << "R :\t" << model.transform.rotation << "\n";
+    std::cerr << "mR :\t" << Matrix4x4::Rotate(model.transform.rotation) << "\n";
     // 模型坐标到世界坐标
-    Matrix4x4 mLTW = object.transform.localToWorldMatrix();
+    Matrix4x4 mLTW = model.transform.localToWorldMatrix();
     std::cerr << "mLTW :\t" << mLTW << "\n";
     for (int i = 0; i < nVerts; i++)
-        vertexBuffer.push_back(mLTW * Vector4(object.model[i], 1));
+        vertexBuffer.push_back(mLTW * Vector4(model[i], 1));
     std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
     // 世界空间到观察空间
     Matrix4x4 mView = Matrix4x4::LookAt(transform.position, transform.forward(), transform.up());
@@ -78,12 +97,12 @@ void Camera::VertexTransform(Object& object)
     vertexBuffer = mScreen * vertexBuffer;
     std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
 #else
-    int nVerts = object.model.nVerts();
-    vertexBuffer.reserve(nVerts);
+    int nVerts = model.nVerts();
+    vertexBuffer.resize(nVerts);
     // 模型坐标到世界坐标
-    Matrix4x4 mLTW = object.transform.localToWorldMatrix();
+    Matrix4x4 mLTW = model.transform.localToWorldMatrix();
     for (int i = 0; i < nVerts; i++)
-        vertexBuffer.push_back(mLTW * Vector4(object.model[i], 1));
+        vertexBuffer[i] = mLTW * Vector4(model[i], 1);
     // 世界空间到观察空间
     Matrix4x4 mView = Matrix4x4::LookAt(transform.position, transform.forward(), transform.up());
     vertexBuffer = mView * vertexBuffer;
@@ -104,55 +123,64 @@ void Camera::VertexTransform(Object& object)
 #endif
 }
 
-void Camera::Rasterization(Vector3 p1, Vector3 p2, Vector3 p3, Color c)
+void Camera::Rasterization(Model& model)
 {
-    Vector2 minPoint, maxPoint;
-    minPoint.x = std::min(std::min(p1.x, p2.x), p3.x);
-    minPoint.y = std::min(std::min(p1.y, p2.y), p3.y);
-    maxPoint.x = std::max(std::max(p1.x, p2.x), p3.x);
-    maxPoint.y = std::max(std::max(p1.y, p2.y), p3.y);
-    // 剔除边界外的三角形
-    if (minPoint.x > screenSize.x || minPoint.y > screenSize.y || maxPoint.x < 0 || maxPoint.y < 0)
-        return;
-    for (int y = minPoint.y; y < maxPoint.y; y++)
+    for (int i = 0; i < model.nFaces(); i++)
     {
-        if (y < 0 || y >= screenSize.y)
-            continue;
-        for (int x = minPoint.x; x < maxPoint.x; x++)
+        std::vector<int> face = model.face(i);
+        Vector3 p1 = vertexBuffer[face[0]];
+        Vector3 p2 = vertexBuffer[face[1]];
+        Vector3 p3 = vertexBuffer[face[2]];
+        Color c = Color::GetRandomColor();
+
+        Vector2 minPoint, maxPoint;
+        minPoint.x = std::min(std::min(p1.x, p2.x), p3.x);
+        minPoint.y = std::min(std::min(p1.y, p2.y), p3.y);
+        maxPoint.x = std::max(std::max(p1.x, p2.x), p3.x);
+        maxPoint.y = std::max(std::max(p1.y, p2.y), p3.y);
+        // 剔除边界外的三角形
+        if (minPoint.x > screenSize.x || minPoint.y > screenSize.y || maxPoint.x < 0 || maxPoint.y < 0)
+            return;
+        for (int y = minPoint.y; y < maxPoint.y; y++)
         {
-            if (x < 0 || x >= screenSize.x)
+            if (y < 0 || y >= screenSize.y)
                 continue;
-            Vector2 p(x, y);
-            float cross1 = Vector2(p2 - p1) ^ (p - (Vector2)p1);
-            float cross2 = Vector2(p3 - p2) ^ (p - (Vector2)p2);
-            float cross3 = Vector2(p1 - p3) ^ (p - (Vector2)p3);
-            if (cross1 > 0 && cross2 > 0 && cross3 > 0 || cross1 < 0 && cross2 < 0 && cross3 < 0)
+            for (int x = minPoint.x; x < maxPoint.x; x++)
             {
-                float det = (p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y);
-                float lambda1 = ((p2.y - p3.y) * (p.x - p3.x) + (p3.x - p2.x) * (p.y - p3.y)) / det;
-                float lambda2 = ((p3.y - p1.y) * (p.x - p3.x) + (p1.x - p3.x) * (p.y - p3.y)) / det;
-                float lambda3 = 1 - lambda1 - lambda2;
-                float z = lambda1 * p1.z + lambda2 * p2.z + lambda3 * p3.z;
-                if (z < -1 || z > 1)
+                if (x < 0 || x >= screenSize.x)
                     continue;
-                if (zBuffer[y][x] > z)
+                Vector2 p(x, y);
+                float cross1 = Vector2(p2 - p1) ^ (p - (Vector2)p1);
+                float cross2 = Vector2(p3 - p2) ^ (p - (Vector2)p2);
+                float cross3 = Vector2(p1 - p3) ^ (p - (Vector2)p3);
+                if (cross1 > 0 && cross2 > 0 && cross3 > 0 || cross1 < 0 && cross2 < 0 && cross3 < 0)
                 {
-                    zBuffer[y][x] = z;
-                    image.Set({x, y}, c);
+                    float det = (p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y);
+                    float lambda1 = ((p2.y - p3.y) * (p.x - p3.x) + (p3.x - p2.x) * (p.y - p3.y)) / det;
+                    float lambda2 = ((p3.y - p1.y) * (p.x - p3.x) + (p1.x - p3.x) * (p.y - p3.y)) / det;
+                    float lambda3 = 1 - lambda1 - lambda2;
+                    float z = lambda1 * p1.z + lambda2 * p2.z + lambda3 * p3.z;
+                    if (z < -1 || z > 1)
+                        continue;
+                    if (zBuffer[y][x] > z)
+                    {
+                        zBuffer[y][x] = z;
+                        image.Set({x, y}, c);
+                    }
                 }
             }
         }
     }
 }
 
-void Camera::DrawWireframe(Object& object)
+void Camera::DrawWireframe(Model& model)
 {
     Painter painter(image);
 
     Color c(255, 255, 255);
-    for (int i = 0; i < object.model.nFaces(); i++)
+    for (int i = 0; i < model.nFaces(); i++)
     {
-        std::vector<int> face = object.model.face(i);
+        std::vector<int> face = model.face(i);
         for (int j = 0; j < 3; j++)
         {
             Vector4 p1 = vertexBuffer[face[j]];

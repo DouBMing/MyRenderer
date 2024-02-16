@@ -185,71 +185,28 @@ struct Vector4
 {
     float x, y, z, w;
 
-    Vector4() : x(0), y(0), z(0), w(0) {}
-    Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-    Vector4(Vector3 v, float w) : x(v.x), y(v.y), z(v.z), w(w) {}
-    float magnitude() const { return std::sqrt(x * x + y * y + z * z + w * w); }
-    Vector4 normalized() const
-    {
-        float m = magnitude();
-        return Vector4(x / m, y / m, z / m, w / m);
-    }
-    Vector4& Normalize() { return *this = *this / magnitude(); }
-    float& operator [](int index)
-    {
-        switch (index)
-        {
-            case 0 : return x;
-            case 1 : return y;
-            case 2 : return z;
-            case 3 : return w;
-            default : throw std::out_of_range("Invalid index.");
-        }
-    }
-    float operator [](int index) const
-    {
-        switch (index)
-        {
-            case 0 : return x;
-            case 1 : return y;
-            case 2 : return z;
-            case 3 : return w;
-            default : throw std::out_of_range("Invalid index.");
-        }
-    }
-    Vector4& operator +=(const Vector4& v) { return *this = *this + v; }
-    Vector4& operator -=(const Vector4& v) { return *this = *this - v; }
-    Vector4& operator *=(float f) { return *this = *this * f; }
-    Vector4& operator /=(float f) { return *this = *this / f; }
-    template<typename T>
-    operator Vec3<T>() const { return Vec3<T>(x / w, y / w, z / w); }
-    friend Vector4 operator +(const Vector4& a, const Vector4& b)
-    {
-        return Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-    }
-    friend Vector4 operator -(const Vector4& v)
-    {
-        return Vector4(-v.x, -v.y, -v.z, -v.w);
-    }
-    friend Vector4 operator -(const Vector4& a, const Vector4& b)
-    {
-        return Vector4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
-    }
-    // 点乘
-    friend float operator *(const Vector4& a, const Vector4& b)
-    {
-        return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-    }
-    friend Vector4 operator *(const Vector4& a, float f)
-    {
-        return Vector4(a.x * f, a.y * f, a.z * f, a.w * f);
-    }
-    friend Vector4 operator /(const Vector4& a, float f)
-    {
-        return Vector4(a.x / f, a.y / f, a.z / f, a.w / f);
-    }
-    friend std::ostream& operator <<(std::ostream& s, Vector4 v)
-    {
-        return s << "(" << v.x << ",\t" << v.y << ",\t" << v.z << ",\t" << v.w << ")";
-    }
+    Vector4();
+    Vector4(float x, float y, float z, float w);
+    Vector4(Vector3 v, float w);
+    float magnitude() const;
+    Vector4 normalized() const;
+    Vector4& Normalize();
+    float& operator [](int index);
+    float operator [](int index) const;
+    Vector4& operator +=(const Vector4& v);
+    Vector4& operator -=(const Vector4& v);
+    Vector4& operator *=(float f);
+    Vector4& operator /=(float f);
+    operator Vector3() const;
 };
+
+Vector4 operator +(const Vector4& a, const Vector4& b);
+Vector4 operator -(const Vector4& v);
+Vector4 operator -(const Vector4& a, const Vector4& b);
+float operator *(const Vector4& a, const Vector4& b);
+Vector4 operator *(const Vector4& a, float f);
+Vector4 operator /(const Vector4& a, float f);
+std::ostream& operator <<(std::ostream& s, Vector4 v);
+
+Vector3 BarycentricCoordinate(Vector3 p, Vector3 v1, Vector3 v2, Vector3 v3);
+float Distance(Vector3 p1, Vector3 p2);

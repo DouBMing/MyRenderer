@@ -1,11 +1,12 @@
 #pragma once
 #include <vector>
-#include "vector.h"
+#include "object.h"
 
-class Model
+class Model : public Object
 {
 public:
-    Model(std::string filePath);
+    Model(const std::string& modelFile);
+    Model(const std::string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale);
     ~Model();
     int nVerts();
     int nFaces();
@@ -17,4 +18,5 @@ private:
     std::vector<Vector3> verts;
     std::vector<std::vector<int>> faces;
     Vector3 boundsSize; // 边界框大小
+    void Read(const std::string& modelFile);
 };

@@ -1,12 +1,14 @@
 #pragma once
 #include "transform.h"
-#include "model.h"
+
+class Scene;
 
 class Object
 {
 public:
-    Model& model;
     Transform transform;
-    Object(std::string modelPath, Vector3 position = Vector3(), Vector3 rotation = Vector3(), Vector3 scale = Vector3(1, 1, 1));
+    Object(Vector3 position = Vector3(), Vector3 rotation = Vector3(), Vector3 scale = Vector3(1, 1, 1));
     ~Object();
+protected:
+    Scene& scene;   // 物体所属的场景
 };

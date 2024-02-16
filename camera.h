@@ -1,24 +1,26 @@
 #pragma once
 #include "object.h"
+#include "model.h"
 #include "bitmap.h"
 
-class Camera
+class Camera : public Object
 {
 public:
-    Transform transform;
+    Camera(int width, int height);
+    Camera(int width, int height, Vector3 position, Vector3 rotation);
+    ~Camera();
+    void Render();
+private:
+    Vector2Int screenSize;
     float fieldOfView;
     float nearClipPlane;
     float farClipPlane;
-    Camera(int width, int height, Vector3 position = Vector3(), Vector3 rotation = Vector3());
-    ~Camera();
-    void Render(Object& object);
-private:
-    Vector2Int screenSize;
     Bitmap image;
     std::vector<Vector4> vertexBuffer;
     float** zBuffer;
-    void VertexTransform(Object& object);   // 顶点变换，最终变换为屏幕空间坐标
-    void Rasterization(Vector3 p1, Vector3 p2, Vector3 p3, Color c);
-    void DrawWireframe(Object& object);
+    void Render(Model& model);
+    void VertexTransform(Model& model);   // 顶点变换，最终变换为屏幕空间坐标
+    void Rasterization(Model& model);
+    void DrawWireframe(Model& model);
     void Output();
 };

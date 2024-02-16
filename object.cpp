@@ -1,10 +1,7 @@
 #include "object.h"
-#include "matrix.h"
+#include "scene.h"
 
-Object::Object(std::string modelPath, Vector3 position, Vector3 rotation, Vector3 scale)
-    : model(*new Model(modelPath)), transform(position, rotation, scale) {}
+Object::Object(Vector3 position, Vector3 rotation, Vector3 scale)
+    : scene(*Scene::current), transform(position, rotation, scale) {}
 
-Object::~Object()
-{
-    delete &model;
-}
+Object::~Object() {}
