@@ -1,39 +1,33 @@
 {
-    "tasks": [
-        {
-            "type": "cppbuild",
-            "label": "C/C++: g++.exe 生成活动文件",
-            "command": "D:\\Program Files\\Mingw\\mingw64\\bin\\g++.exe",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "${file}",
-                "${fileDirname}\\bitmap.cpp",
-                "${fileDirname}\\model.cpp",
-                "${fileDirname}\\painter.cpp",
-                "${fileDirname}\\transform.cpp",
-                "${fileDirname}\\object.cpp",
-                "${fileDirname}\\camera.cpp",
-                "${fileDirname}\\quaternion.cpp",
-                "${fileDirname}\\matrix.cpp",
-                "${fileDirname}\\light.cpp",
-                "${fileDirname}\\scene.cpp",
-                "${fileDirname}\\vector.cpp",
-                "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "调试器生成的任务。"
-        }
-    ],
-    "version": "2.0.0"
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "amigaassembly",
+			"vasm": {
+				"enabled": true,
+				"command": "${config:amiga-assembly.binDir}/vasmm68k_mot",
+				"args": [
+					"-m68000",
+					"-Fhunk",
+					"-linedebug"
+				],
+				"leaveWarnings": true
+			},
+			"vlink": {
+				"enabled": true,
+				"command": "${config:amiga-assembly.binDir}/vlink",
+				"includes": "*.{s,S,asm,ASM}",
+				"excludes": "",
+				"createStartupSequence": true,
+				"createExeFileParentDir": true,
+				"exefilename": "../uae/dh0/myprogram",
+				"args": [
+					"-bamigahunk",
+					"-Bstatic"
+				]
+			},
+			"problemMatcher": [],
+			"label": "amigaassembly: build"
+		}
+	]
 }
