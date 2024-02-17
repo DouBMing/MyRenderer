@@ -1502,6 +1502,7 @@ CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: D:/CS/CG/MyRenderer/src/objec
   D:/Program\ Files/Mingw/mingw64/x86_64-w64-mingw32/include/wctype.h
 
 CMakeFiles/Renderer.dir/src/objects/model.cpp.obj: D:/CS/CG/MyRenderer/src/objects/model.cpp \
+  D:/CS/CG/MyRenderer/src/graphics/bitmap.h \
   D:/CS/CG/MyRenderer/src/math/matrix.h \
   D:/CS/CG/MyRenderer/src/math/quaternion.h \
   D:/CS/CG/MyRenderer/src/math/vector.h \

@@ -79,6 +79,13 @@ T operator ^(const Vec2<T>& a, const Vec2<T>& b)
 }
 
 template<typename T>
+std::istringstream& operator >>(std::istringstream& iss, Vec2<T>& v)
+{
+    iss >> v.x >> v.y;
+    return iss;
+}
+
+template<typename T>
 std::ostream& operator <<(std::ostream& s, const Vec2<T>& v)
 {
     s << "(" << v.x << ", " << v.y << ")";
@@ -163,17 +170,17 @@ Vec3<T> operator ^(const Vec3<T>& a, const Vec3<T>& b)
 }
 
 template<typename T>
-std::istringstream& operator >>(std::istringstream& s, Vec3<T>& v)
+std::istringstream& operator >>(std::istringstream& iss, Vec3<T>& v)
 {
-    s >> v.x >> v.y >> v.z;
-    return s;
+    iss >> v.x >> v.y >> v.z;
+    return iss;
 }
 
 template<typename T>
-std::ostream& operator <<(std::ostream& s, const Vec3<T>& v)
+std::ostream& operator <<(std::ostream& os, const Vec3<T>& v)
 {
-    s << "(" << v.x << ", " << v.y << ", " << v.z << ")";
-    return s;
+    os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+    return os;
 }
 
 typedef Vec2<int> Vector2Int;
@@ -206,7 +213,7 @@ Vector4 operator -(const Vector4& a, const Vector4& b);
 float operator *(const Vector4& a, const Vector4& b);
 Vector4 operator *(const Vector4& a, float f);
 Vector4 operator /(const Vector4& a, float f);
-std::ostream& operator <<(std::ostream& s, Vector4 v);
+std::ostream& operator <<(std::ostream& os, Vector4 v);
 
 Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3);
 float Distance(Vector3 p1, Vector3 p2);

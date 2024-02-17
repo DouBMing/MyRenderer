@@ -1511,6 +1511,7 @@ CMakeFiles/Renderer.dir/src/objects/light.cpp.obj
 
 CMakeFiles/Renderer.dir/src/objects/model.cpp.obj
  D:/CS/CG/MyRenderer/src/objects/model.cpp
+ D:/CS/CG/MyRenderer/src/graphics/bitmap.h
  D:/CS/CG/MyRenderer/src/math/matrix.h
  D:/CS/CG/MyRenderer/src/math/quaternion.h
  D:/CS/CG/MyRenderer/src/math/vector.h

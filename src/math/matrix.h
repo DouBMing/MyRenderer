@@ -25,7 +25,7 @@ public:
     friend std::vector<Vector4>& operator *(const Matrix4x4& m, std::vector<Vector4>& vertices);
     friend Matrix4x4 operator *(const Matrix4x4& m, float f);
     friend Matrix4x4 operator /(const Matrix4x4& m, float f);
-    friend std::ostream& operator <<(std::ostream& s, const Matrix4x4& m);
+    friend std::ostream& operator <<(std::ostream& os, const Matrix4x4& m);
 
     static Matrix4x4 identity();
     static Matrix4x4 Translate(Vector3 p);

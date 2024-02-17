@@ -8,15 +8,29 @@ using std::string;
 static float floatMin = std::numeric_limits<float>::min();
 static float floatMax = std::numeric_limits<float>::max();
 
+std::istringstream& operator >>(std::istringstream& iss, Face& f)
+{
+    char slash;
+    for (int i = 0; i < 3; i++)
+    {
+        iss >> f.vi[i] >> slash >> f.ti[i] >> slash >> f.ni[i];
+        // obj文件中的索引是从1开始的，因此需要减1
+        f.vi[i]--;
+        f.ti[i]--;
+        f.ni[i]--;
+    }
+    return iss;
+}
+
 Model::Model(const string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale)
     : Object(position, rotation, scale), verts(), faces()
 {
-    Read(modelFile);
+    ReadOBJ(modelFile);
 }
 
 Model::Model(const string& modelFile) : verts(), faces()
 {
-    Read(modelFile);
+    ReadOBJ(modelFile);
 }
 
 Model::~Model() {}
@@ -36,7 +50,7 @@ Vector3 Model::vert(int index)
     return verts[index];
 }
 
-std::vector<int> Model::face(int index)
+Face Model::face(int index)
 {
     return faces[index];
 }
@@ -51,7 +65,7 @@ Vector3 Model::operator [](int index)
     return verts[index];
 }
 
-void Model::Read(const string& modelFile)
+void Model::ReadOBJ(const string& modelFile)
 {
     std::ifstream in;
     in.open(modelFile, std::ifstream::in);
@@ -69,13 +83,13 @@ void Model::Read(const string& modelFile)
     {
         std::getline(in, line);
         std::istringstream iss(line.c_str());
-        char trash;
-        if (!line.compare(0, 2, "v "))
+        
+        string prefix;
+        iss >> prefix;
+        if (prefix == "v")
         {
-            iss >> trash;
             Vector3 v;
-            for (int i = 0; i < 3; i++)
-                iss >> v;
+            iss >> v;
             verts.push_back(v);
 
             minPoint.x = std::min(minPoint.x, v.x);
@@ -85,16 +99,22 @@ void Model::Read(const string& modelFile)
             maxPoint.y = std::max(maxPoint.y, v.y);
             maxPoint.z = std::max(maxPoint.z, v.z);
         }
-        else if (!line.compare(0, 2, "f "))
+        else if (prefix == "vt")
         {
-            std::vector<int> f;
-            int itrash, idx;
-            iss >> trash;
-            while (iss >> idx >> trash >> itrash >> trash >> itrash)
-            {
-                idx--; // in wavefront obj all indices start at 1, not zero
-                f.push_back(idx);
-            }
+            Vector2 t;
+            iss >> t;
+            texCoords.push_back(t);
+        }
+        else if (prefix == "vn")
+        {
+            Vector3 n;
+            iss >> n;
+            normals.push_back(n);
+        }
+        else if (prefix == "f")
+        {
+            Face f;
+            iss >> f;
             faces.push_back(f);
         }
     }

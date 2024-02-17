@@ -127,10 +127,10 @@ void Camera::Rasterization(Model& model)
 {
     for (int i = 0; i < model.nFaces(); i++)
     {
-        std::vector<int> face = model.face(i);
-        Vector3 p1 = vertexBuffer[face[0]];
-        Vector3 p2 = vertexBuffer[face[1]];
-        Vector3 p3 = vertexBuffer[face[2]];
+        Face face = model.face(i);
+        Vector3 p1 = vertexBuffer[face.vi[0]];
+        Vector3 p2 = vertexBuffer[face.vi[1]];
+        Vector3 p3 = vertexBuffer[face.vi[2]];
         Color c = Color::GetRandomColor();
 
         Vector2 minPoint, maxPoint;
@@ -173,11 +173,11 @@ void Camera::DrawWireframe(Model& model)
     Color c(255, 255, 255);
     for (int i = 0; i < model.nFaces(); i++)
     {
-        std::vector<int> face = model.face(i);
+        Face face = model.face(i);
         for (int j = 0; j < 3; j++)
         {
-            Vector4 p1 = vertexBuffer[face[j]];
-            Vector4 p2 = vertexBuffer[face[(j + 1) % 3]];
+            Vector4 p1 = vertexBuffer[face.vi[j]];
+            Vector4 p2 = vertexBuffer[face.vi[(j + 1) % 3]];
             painter.Line(Vector2Int(p1.x, p1.y), Vector2Int(p2.x, p2.y), c);
         }
     }
