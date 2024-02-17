@@ -1,4 +1,5 @@
 Camera  1600 900  4.5 0 -2.5  -2 -60 0
 Light  3 3 -3  0 0 0
-Model  african_head  2.5 0 -1.4  0 117 0  1 1 1
-Model  moon
+//Model  african_head  african_head_diffuse  2.5 0 -1.4  0 117 0  1 1 1
+//Model  moon  no_texture
+Model  diablo3_pose  diablo3_pose_diffuse  0 0 0  0 130 0  1 1 1

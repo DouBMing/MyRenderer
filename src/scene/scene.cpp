@@ -12,7 +12,7 @@ Scene::Scene(const std::string& scenePath)
     in.open(scenePath, std::ifstream::in);
     if (in.fail())
     {
-        std::cerr << "can't open file." << "\n";
+        std::cerr << "Can't open file." << "\n";
         return;
     }
 
@@ -20,6 +20,8 @@ Scene::Scene(const std::string& scenePath)
     while (!in.eof())
     {
         std::getline(in, line);
+        if (line.compare(0, 2, "//") == 0) // "//"表示注释
+            continue;
         std::istringstream iss(line.c_str());
         std::string type;
         iss >> type;
@@ -40,18 +42,20 @@ Scene::Scene(const std::string& scenePath)
         }
         else if (type.compare("Model") == 0)
         {
-            std::string modelName;
-            iss >> modelName;
+            std::string modelName, textrueName;
+            iss >> modelName >> textrueName;
+            std::string modelPath = "Models/" + modelName + ".obj";
+            std::string textruePath = textrueName == "no_texture" ? "" : "Textures/" + textrueName + ".bmp";
             if (iss.eof())
             {
-                Model model("Models/" + modelName + ".obj");
+                Model model(modelPath, textruePath);
                 models.push_back(model);
             }
             else
             {
                 Vector3 position, rotation, scale;
                 iss >> position >> rotation >> scale;
-                Model model("Models/" + modelName + ".obj", position, rotation, scale);
+                Model model(modelPath, textruePath, position, rotation, scale);
                 models.push_back(model);
             }
         }

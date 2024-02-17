@@ -125,6 +125,64 @@ void Camera::VertexTransform(Model& model)
 
 void Camera::Rasterization(Model& model)
 {
+    if (model.diffuseMap == nullptr)
+    {
+        FillRandomColor(model);
+        return;
+    }
+    TextureMapping(model);
+}
+
+void Camera::TextureMapping(Model& model)
+{
+    for (int i = 0; i < model.nFaces(); i++)
+    {
+        Face face = model.face(i);
+        Vector3 p1 = vertexBuffer[face.vi[0]];
+        Vector3 p2 = vertexBuffer[face.vi[1]];
+        Vector3 p3 = vertexBuffer[face.vi[2]];
+
+        Vector2 minPoint, maxPoint;
+        minPoint.x = std::min(std::min(p1.x, p2.x), p3.x);
+        minPoint.y = std::min(std::min(p1.y, p2.y), p3.y);
+        maxPoint.x = std::max(std::max(p1.x, p2.x), p3.x);
+        maxPoint.y = std::max(std::max(p1.y, p2.y), p3.y);
+        // 剔除边界外的三角形
+        if (minPoint.x > screenSize.x || minPoint.y > screenSize.y || maxPoint.x < 0 || maxPoint.y < 0)
+            return;
+        for (int y = minPoint.y; y < maxPoint.y; y++)
+        {
+            if (y < 0 || y >= screenSize.y)
+                continue;
+            for (int x = minPoint.x; x < maxPoint.x; x++)
+            {
+                if (x < 0 || x >= screenSize.x)
+                    continue;
+                Vector2 p(x, y);
+                Vector3 baryCoord = BarycentricCoordinate(p, p1, p2, p3);
+                if (baryCoord[0] < 0 || baryCoord[1] < 0 || baryCoord[2] < 0)
+                    continue;
+                float z = p1.z * baryCoord[0] + p2.z * baryCoord[1] + p3.z * baryCoord[2];
+                if (z < -1 || z > 1)
+                    continue;
+                if (zBuffer[y][x] > z)
+                {
+                    zBuffer[y][x] = z;
+                    Vector2 uv1 = model.texCoord(face.ti[0]);
+                    Vector2 uv2 = model.texCoord(face.ti[1]);
+                    Vector2 uv3 = model.texCoord(face.ti[2]);
+                    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
+                    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
+                    Color c = model.diffuseMap->Get(u * model.diffuseMap->width, v * model.diffuseMap->height);
+                    image.Set({x, y}, c);
+                }
+            }
+        }
+    }
+}
+
+void Camera::FillRandomColor(Model& model)
+{
     for (int i = 0; i < model.nFaces(); i++)
     {
         Face face = model.face(i);

@@ -21,6 +21,8 @@ private:
     void Render(Model& model);
     void VertexTransform(Model& model);   // 顶点变换，最终变换为屏幕空间坐标
     void Rasterization(Model& model);
+    void TextureMapping(Model& model);
+    void FillRandomColor(Model& model);
     void DrawWireframe(Model& model);
     void Output();
 };

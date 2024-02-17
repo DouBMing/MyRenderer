@@ -22,18 +22,35 @@ std::istringstream& operator >>(std::istringstream& iss, Face& f)
     return iss;
 }
 
-Model::Model(const string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale)
-    : Object(position, rotation, scale), verts(), faces()
+Model::Model(const string& modelFile, const std::string& textureFile)
 {
-    ReadOBJ(modelFile);
+    LoadOBJ(modelFile);
+    LoadTexture(textureFile);
 }
 
-Model::Model(const string& modelFile) : verts(), faces()
+Model::Model(const string& modelFile, const std::string& textureFile, Vector3 position, Vector3 rotation, Vector3 scale)
+    : Object(position, rotation, scale)
 {
-    ReadOBJ(modelFile);
+    LoadOBJ(modelFile);
+    LoadTexture(textureFile);
 }
 
-Model::~Model() {}
+Model::Model(const Model& model) : Object(model)
+{
+    diffuseMap = model.diffuseMap == nullptr ? nullptr : new Bitmap(*model.diffuseMap);
+    
+    verts = model.verts;
+    texCoords = model.texCoords;
+    normals = model.normals;
+    faces = model.faces;
+    boundsSize = model.boundsSize;
+}
+
+Model::~Model()
+{
+    if (diffuseMap != nullptr)
+        delete diffuseMap;
+}
 
 int Model::nVerts()
 {
@@ -48,6 +65,16 @@ int Model::nFaces()
 Vector3 Model::vert(int index)
 {
     return verts[index];
+}
+
+Vector2 Model::texCoord(int index)
+{
+    return texCoords[index];
+}
+
+Vector3 Model::normal(int index)
+{
+    return normals[index];
 }
 
 Face Model::face(int index)
@@ -65,13 +92,13 @@ Vector3 Model::operator [](int index)
     return verts[index];
 }
 
-void Model::ReadOBJ(const string& modelFile)
+void Model::LoadOBJ(const string& modelFile)
 {
     std::ifstream in;
     in.open(modelFile, std::ifstream::in);
     if (in.fail())
     {
-        std::cerr << "can't open " + modelFile + ".obj" << "\n";
+        std::cerr << "Can't open " + modelFile + ".obj" << "\n";
         return;
     }
     
@@ -124,4 +151,15 @@ void Model::ReadOBJ(const string& modelFile)
         verts[i] -= boundsCenter;   // 模型统一以边界框中心为原点
     boundsSize = maxPoint - minPoint;
     std::cerr << "BoundsSize:\t" << boundsSize << "\n";
+}
+
+void Model::LoadTexture(const string& textureFile)
+{
+    if (textureFile == "")
+    {
+        diffuseMap = nullptr;
+        return;
+    }
+    diffuseMap = new Bitmap();
+    diffuseMap->Read(textureFile);
 }

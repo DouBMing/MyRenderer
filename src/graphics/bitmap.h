@@ -19,6 +19,10 @@ struct Color
 class Bitmap
 {
 public:
+    int width;
+    int height;
+    int bit;
+
     Bitmap();
     Bitmap(int width, int height, int bitCount);
     Bitmap(const Bitmap& srcImage);
@@ -31,9 +35,6 @@ public:
     void Set(Vector2Int p, Color c);
     void Clear();                   // 清除图像
 private:
-    int width;
-    int height;
-    int bit;
     Color* colorTable;              //调色板
     byte* data;                     //数据
 };

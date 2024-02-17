@@ -15,21 +15,26 @@ std::istringstream& operator >>(std::istringstream& iss, Face& v);
 class Model : public Object
 {
 public:
-    Model(const std::string& modelFile);
-    Model(const std::string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale);
+    Bitmap* diffuseMap;               // 漫反射贴图
+
+    Model(const std::string& modelFile, const std::string& textureFile);
+    Model(const std::string& modelFile, const std::string& textureFile, Vector3 position, Vector3 rotation, Vector3 scale);
+    Model(const Model& model);
     ~Model();
     int nVerts();
     int nFaces();
     Vector3 vert(int index);
+    Vector2 texCoord(int index);
+    Vector3 normal(int index);
     Face face(int index);
     Vector3 GetBoundsSize();
-    Vector3 operator [](int index); // 通过索引器获取顶点
+    Vector3 operator [](int index);  // 通过索引器获取顶点
 private:
     std::vector<Vector3> verts;      // 顶点坐标
     std::vector<Vector2> texCoords;  // 材质坐标
     std::vector<Vector3> normals;    // 法线坐标
     std::vector<Face> faces;
-    Vector3 boundsSize; // 边界框大小
-    void ReadOBJ(const std::string& modelFile);
-    Bitmap diffuseMap;  // 漫反射贴图
+    Vector3 boundsSize;              // 边界框大小
+    void LoadOBJ(const std::string& modelFile);
+    void LoadTexture(const std::string& textureFile);
 };
