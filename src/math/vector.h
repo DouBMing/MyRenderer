@@ -208,5 +208,6 @@ Vector4 operator *(const Vector4& a, float f);
 Vector4 operator /(const Vector4& a, float f);
 std::ostream& operator <<(std::ostream& s, Vector4 v);
 
-Vector3 BarycentricCoordinate(Vector3 p, Vector3 v1, Vector3 v2, Vector3 v3);
+Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3);
 float Distance(Vector3 p1, Vector3 p2);
+float Distance(Vector2 p1, Vector2 p2);

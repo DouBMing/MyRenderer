@@ -56,7 +56,10 @@ void Model::Read(const string& modelFile)
     std::ifstream in;
     in.open(modelFile, std::ifstream::in);
     if (in.fail())
+    {
+        std::cerr << "can't open " + modelFile + ".obj" << "\n";
         return;
+    }
     
     Vector3 minPoint = Vector3(floatMax, floatMax, floatMax);
     Vector3 maxPoint = Vector3(floatMin, floatMin, floatMin);

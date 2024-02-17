@@ -150,23 +150,16 @@ void Camera::Rasterization(Model& model)
                 if (x < 0 || x >= screenSize.x)
                     continue;
                 Vector2 p(x, y);
-                float cross1 = Vector2(p2 - p1) ^ (p - (Vector2)p1);
-                float cross2 = Vector2(p3 - p2) ^ (p - (Vector2)p2);
-                float cross3 = Vector2(p1 - p3) ^ (p - (Vector2)p3);
-                if (cross1 > 0 && cross2 > 0 && cross3 > 0 || cross1 < 0 && cross2 < 0 && cross3 < 0)
+                Vector3 baryCoord = BarycentricCoordinate(p, p1, p2, p3);
+                if (baryCoord[0] < 0 || baryCoord[1] < 0 || baryCoord[2] < 0)
+                    continue;
+                float z = p1.z * baryCoord[0] + p2.z * baryCoord[1] + p3.z * baryCoord[2];
+                if (z < -1 || z > 1)
+                    continue;
+                if (zBuffer[y][x] > z)
                 {
-                    float det = (p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y);
-                    float lambda1 = ((p2.y - p3.y) * (p.x - p3.x) + (p3.x - p2.x) * (p.y - p3.y)) / det;
-                    float lambda2 = ((p3.y - p1.y) * (p.x - p3.x) + (p1.x - p3.x) * (p.y - p3.y)) / det;
-                    float lambda3 = 1 - lambda1 - lambda2;
-                    float z = lambda1 * p1.z + lambda2 * p2.z + lambda3 * p3.z;
-                    if (z < -1 || z > 1)
-                        continue;
-                    if (zBuffer[y][x] > z)
-                    {
-                        zBuffer[y][x] = z;
-                        image.Set({x, y}, c);
-                    }
+                    zBuffer[y][x] = z;
+                    image.Set({x, y}, c);
                 }
             }
         }
