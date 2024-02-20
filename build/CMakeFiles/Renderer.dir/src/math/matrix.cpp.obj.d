@@ -156,5 +156,4 @@ CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_relops.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_vector.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_bvector.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/vector.tcc \
- D:/CS/CG/MyRenderer/src/math/vec.h
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/vector.tcc
