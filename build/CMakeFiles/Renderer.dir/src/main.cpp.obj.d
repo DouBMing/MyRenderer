@@ -139,6 +139,7 @@ CMakeFiles/Renderer.dir/src/main.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_bvector.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/vector.tcc \
  D:/CS/CG/MyRenderer/src/objects/camera.h \
+ D:/CS/CG/MyRenderer/src/objects/model.h \
  D:/CS/CG/MyRenderer/src/objects/object.h \
  D:/CS/CG/MyRenderer/src/objects/transform.h \
  D:/CS/CG/MyRenderer/src/math/vector.h \
@@ -162,6 +163,5 @@ CMakeFiles/Renderer.dir/src/main.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/sstream.tcc \
  D:/CS/CG/MyRenderer/src/math/quaternion.h \
  D:/CS/CG/MyRenderer/src/math/matrix.h \
- D:/CS/CG/MyRenderer/src/objects/model.h \
  D:/CS/CG/MyRenderer/src/graphics/bitmap.h \
  D:/CS/CG/MyRenderer/src/objects/light.h

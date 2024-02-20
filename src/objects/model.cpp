@@ -52,42 +52,42 @@ Model::~Model()
         delete diffuseMap;
 }
 
-int Model::nVerts()
+int Model::nVerts() const
 {
     return verts.size();
 }
 
-int Model::nFaces()
+int Model::nFaces() const
 {
     return faces.size();
 }
 
-Vector3 Model::vert(int index)
+Vector3 Model::vert(int index) const
 {
     return verts[index];
 }
 
-Vector2 Model::texCoord(int index)
+Vector2 Model::texCoord(int index) const
 {
     return texCoords[index];
 }
 
-Vector3 Model::normal(int index)
+Vector3 Model::normal(int index) const
 {
     return normals[index];
 }
 
-Face Model::face(int index)
+Face Model::face(int index) const
 {
     return faces[index];
 }
 
-Vector3 Model::GetBoundsSize()
+Vector3 Model::GetBoundsSize() const
 {
     return boundsSize;
 }
 
-Vector3 Model::operator [](int index)
+Vector3 Model::operator [](int index) const
 {
     return verts[index];
 }

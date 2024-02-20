@@ -1,28 +1,32 @@
 #pragma once
-#include "object.h"
 #include "model.h"
 #include "bitmap.h"
 
 class Camera : public Object
 {
 public:
-    Camera(int width, int height);
-    Camera(int width, int height, Vector3 position, Vector3 rotation);
+    Camera(int pixelWidth, int pixelHeight);
+    Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation);
     ~Camera();
+    void AllowMSAA(bool value);
     void Render();
+    void RenderWithShader();
 private:
-    Vector2Int screenSize;
+    int pixelWidth;
+    int pixelHeight;
     float fieldOfView;
     float nearClipPlane;
     float farClipPlane;
     Bitmap image;
-    std::vector<Vector4> vertexBuffer;
+    std::vector<Vector4> vertexBuffer_WorldCoords;
+    std::vector<Vector4> vertexBuffer_ScreenCoords;
     float** zBuffer;
-    void Render(Model& model);
-    void VertexTransform(Model& model);   // 顶点变换，最终变换为屏幕空间坐标
-    void Rasterization(Model& model);
-    void TextureMapping(Model& model);
-    void FillRandomColor(Model& model);
-    void DrawWireframe(Model& model);
+    void Render(const Model& model);
+    void VertexProcessing(const Model& model);   // 顶点变换，最终变换为屏幕空间坐标
+    void TransformVertices(const Matrix4x4& m, const std::vector<Vector4>& src, std::vector<Vector4>& dst);
+    void Rasterization(const Model& model);
+    void TextureMapping(const Model& model);
+    void FillRandomColor(const Model& model);
+    void DrawWireframe(const Model& model);
     void Output();
 };

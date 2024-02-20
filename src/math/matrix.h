@@ -8,9 +8,9 @@ struct Matrix4x4
 public:
     Matrix4x4();
     Matrix4x4(Vector4 r1, Vector4 r2, Vector4 r3, Vector4 r4);
-    float determinant();
-    Matrix4x4 inverse();
-    Matrix4x4 transpose();
+    float determinant() const;
+    Matrix4x4 inverse() const;
+    Matrix4x4 transpose() const;
     Vector4& operator [](int index);
     Vector4 GetRow(int index) const;
     void SetRow(int index, const Vector4& r);
@@ -22,7 +22,6 @@ public:
     friend Matrix4x4 operator -(const Matrix4x4& m1, const Matrix4x4& m2);
     friend Matrix4x4 operator *(const Matrix4x4& m1, const Matrix4x4& m2);
     friend Vector4 operator *(const Matrix4x4& m, const Vector4& v);
-    friend std::vector<Vector4>& operator *(const Matrix4x4& m, std::vector<Vector4>& vertices);
     friend Matrix4x4 operator *(const Matrix4x4& m, float f);
     friend Matrix4x4 operator /(const Matrix4x4& m, float f);
     friend std::ostream& operator <<(std::ostream& os, const Matrix4x4& m);

@@ -5,9 +5,41 @@ Matrix4x4::Matrix4x4() : m({}) {}
 
 Matrix4x4::Matrix4x4(Vector4 r1, Vector4 r2, Vector4 r3, Vector4 r4) : m({r1, r2, r3, r4}) {}
 
-Matrix4x4 Matrix4x4::transpose()
+float Matrix4x4::determinant() const
 {
-    return Matrix4x4(GetColumn(0), GetColumn(1), GetColumn(2), GetColumn(3));
+    float det;
+    det = m[0][0] * (m[1][1] * (m[2][2] * m[3][3] - m[2][3] * m[3][2]) -
+                     m[1][2] * (m[2][1] * m[3][3] - m[2][3] * m[3][1]) +
+                     m[1][3] * (m[2][1] * m[3][2] - m[2][2] * m[3][1])) -
+          m[0][1] * (m[1][0] * (m[2][2] * m[3][3] - m[2][3] * m[3][2]) -
+                     m[1][2] * (m[2][0] * m[3][3] - m[2][3] * m[3][0]) +
+                     m[1][3] * (m[2][0] * m[3][2] - m[2][2] * m[3][0])) +
+          m[0][2] * (m[1][0] * (m[2][1] * m[3][3] - m[2][3] * m[3][1]) -
+                     m[1][1] * (m[2][0] * m[3][3] - m[2][3] * m[3][0]) +
+                     m[1][3] * (m[2][0] * m[3][1] - m[2][1] * m[3][0])) -
+          m[0][3] * (m[1][0] * (m[2][1] * m[3][2] - m[2][2] * m[3][1]) -
+                     m[1][1] * (m[2][0] * m[3][2] - m[2][2] * m[3][0]) +
+                     m[1][2] * (m[2][0] * m[3][1] - m[2][1] * m[3][0]));
+    return det;
+}
+
+Matrix4x4 Matrix4x4::inverse() const
+{
+    float det = determinant();
+    if (det == 0)
+        throw std::runtime_error("Matrix is singular and cannot be inverted.");
+    // TODO: 待补完
+    Matrix4x4 inv;
+
+}
+
+Matrix4x4 Matrix4x4::transpose() const
+{
+    return Matrix4x4({
+        {m[0][0], m[1][0], m[2][0], m[3][0]},
+        {m[0][1], m[1][1], m[2][1], m[3][1]},
+        {m[0][2], m[1][2], m[2][2], m[3][2]},
+        {m[0][3], m[1][3], m[2][3], m[3][3]}});
 }
 
 Vector4& Matrix4x4::operator [](int index)
@@ -40,56 +72,54 @@ void Matrix4x4::SetColumn(int index, Vector4 c)
 
 Matrix4x4 operator +(const Matrix4x4& m1, const Matrix4x4& m2)
 {
-    return Matrix4x4(m1.GetRow(0) + m2.GetRow(0), m1.GetRow(1) + m2.GetRow(1),
-    m1.GetRow(2) + m2.GetRow(2), m1.GetRow(3) + m2.GetRow(3));
+    return Matrix4x4(m1.m[0] + m2.m[0], m1.m[1] + m2.m[1],
+    m1.m[2] + m2.m[2], m1.m[3] + m2.m[3]);
 }
 
 Matrix4x4 operator -(const Matrix4x4& m)
 {
-    return Matrix4x4(-m.GetRow(0), -m.GetRow(1), -m.GetRow(2), -m.GetRow(3));
+    return Matrix4x4(-m.m[0], -m.m[1], -m.m[2], -m.m[3]);
 }
 
 Matrix4x4 operator -(const Matrix4x4& m1, const Matrix4x4& m2)
 {
-    return Matrix4x4(m1.GetRow(0) - m2.GetRow(0), m1.GetRow(1) - m2.GetRow(1),
-    m1.GetRow(2) - m2.GetRow(2), m1.GetRow(3) - m2.GetRow(3));
+    return Matrix4x4(m1.m[0] - m2.m[0], m1.m[1] - m2.m[1],
+    m1.m[2] - m2.m[2], m1.m[3] - m2.m[3]);
 }
 
 Matrix4x4 operator *(const Matrix4x4& m1, const Matrix4x4& m2)
 {
     Matrix4x4 m;
     for (int i = 0; i < 4; i++)
+    {    
         for (int j = 0; j < 4; j++)
-            m[i][j] = m1.GetRow(i) * m2.GetColumn(j);
+        {
+            m[i][j] = m1.m[i][0] * m2.m[0][j] + m1.m[i][1] * m2.m[1][j] +
+                m1.m[i][2] * m2.m[2][j] + m1.m[i][3] * m2.m[3][j];
+        }
+    }
     return m;
 }
 
 Vector4 operator *(const Matrix4x4& m, const Vector4& v)
 {
-    return Vector4(m.GetRow(0) * v, m.GetRow(1) * v, m.GetRow(2) * v, m.GetRow(3) * v);
-}
-
-std::vector<Vector4>& operator *(const Matrix4x4& m, std::vector<Vector4>& vertices)
-{
-    for (int i = 0; i < vertices.size(); i++)
-        vertices[i] = m * vertices[i];
-    return vertices;
+    return Vector4(m.m[0] * v, m.m[1] * v, m.m[2] * v, m.m[3] * v);
 }
 
 Matrix4x4 operator *(const Matrix4x4& m, float f)
 {
-    return Matrix4x4(m.GetRow(0) * f, m.GetRow(1) * f, m.GetRow(2) * f, m.GetRow(3) * f);
+    return Matrix4x4(m.m[0] * f, m.m[1] * f, m.m[2] * f, m.m[3] * f);
 }
 
 Matrix4x4 operator /(const Matrix4x4& m, float f)
 {
-    return Matrix4x4(m.GetRow(0) / f, m.GetRow(1) / f, m.GetRow(2) / f, m.GetRow(3) / f);
+    return Matrix4x4(m.m[0] / f, m.m[1] / f, m.m[2] / f, m.m[3] / f);
 }
 
-std::ostream& operator <<(std::ostream& s, const Matrix4x4& m)
+std::ostream& operator <<(std::ostream& os, const Matrix4x4& m)
 {
-    s << m.m[0] << "\n" << m.m[1] << "\n" << m.m[2] << "\n" << m.m[3];
-    return s;
+    os << m.m[0] << "\n" << m.m[1] << "\n" << m.m[2] << "\n" << m.m[3];
+    return os;
 }
 
 Matrix4x4 Matrix4x4::identity()

@@ -2,22 +2,174 @@
 #include <cmath>
 #include <sstream>
 
-template<typename T> struct Vec3;
+template<int n, typename T>
+struct Vec
+{
+    T data[n];
+
+    Vec() : data({}) {}
+    Vec(T data[n])
+    {
+        for (int i = 0; i < n; i++)
+            this->data[i] = data[i];
+    }
+    float magnitude() const
+    {
+        float mag = 0;
+        for (int i = 0; i < n; i++)
+            mag += data[i] * data[i];
+        return std::sqrt(mag);
+    }
+    Vec<n, T> normalized() const
+    {
+        Vec<n, T> result;
+        float mag = this->magnitude();
+        for (int i = 0; i < n; i++)
+            result.data[i] = this->data[i] / mag;
+        return result;
+    }
+    Vec<n, T>& Normalize()
+    {
+        float mag = this->magnitude();
+        for (int i = 0; i < n; i++)
+            data[i] /= mag;
+        return *this;
+    }
+    T& operator [](int index)
+    {
+        if (index < 0 || index >= n)
+            throw std::out_of_range("Invalid index");
+        return data[index];
+    }
+    T operator [](int index) const
+    {
+        if (index < 0 || index >= n)
+            throw std::out_of_range("Invalid index");
+        return data[index];
+    }
+    Vec<n, T>& operator +=(const Vec<n, T>& v)
+    {
+        for (int i = 0; i < n; ++i)
+            data[i] += v.data[i];
+        return *this;
+    }
+    Vec<n, T>& operator -=(const Vec<n, T>& v)
+    {
+        for (int i = 0; i < n; ++i)
+            data[i] -= v.data[i];
+        return *this;
+    }
+    Vec<n, T>& operator *=(float d)
+    {
+        for (int i = 0; i < n; ++i)
+            data[i] *= d;
+        return *this;
+    }
+    Vec<n, T>& operator /=(float d)
+    {
+        for (int i = 0; i < n; ++i)
+            data[i] /= d;
+        return *this;
+    }
+};
+
+// 取反
+template<int n, typename T>
+Vec<n, T> operator -(const Vec<n, T>& v)
+{
+    Vec<n, T> result;
+    for (int i = 0; i < n; i++)
+        result.data[i] = -v.data[i];
+    return result;
+}
+
+template<int n, typename T>
+Vec<n, T> operator +(const Vec<n, T>& a, const Vec<n, T>& b)
+{
+    Vec<n, T> result;
+    for (int i = 0; i < n; i++)
+        result.data[i] = a.data[i] + b.data[i];
+    return result;
+}
+
+template<int n, typename T>
+Vec<n, T> operator -(const Vec<n, T>& a, const Vec<n, T>& b)
+{
+    Vec<n, T> result;
+    for (int i = 0; i < n; i++)
+        result.data[i] = a.data[i] - b.data[i];
+    return result;
+}
+// 点乘
+template<int n, typename T>
+T operator *(const Vec<n, T>& lhs, const Vec<n, T>& rhs)
+{
+    T result = 0;
+    for (int i = 0; i < n; i++)
+        result += lhs.data[i] * rhs.data[i];
+    return result;
+}
+// 数乘
+template<int n, typename T>
+Vec<n, T> operator *(const Vec<n, T>& a, float d)
+{
+    Vec<n, T> result;
+    for (int i = 0; i < n; i++)
+        result.data[i] = a.data[i] * d;
+    return result;
+}
+
+template<int n, typename T>
+Vec<n, T> operator /(const Vec<n, T>& a, float d)
+{
+    Vec<n, T> result;
+    for (int i = 0; i < n; i++)
+        result.data[i] = a.data[i] / d;
+    return result;
+}
+
+template<int n, typename T>
+std::istringstream& operator >>(std::istringstream& iss, Vec<n, T>& v)
+{
+    for (int i = 0; i < n; i++)
+        iss >> v.data[i];
+    return iss;
+}
+
+template<int n, typename T>
+std::ostream& operator <<(std::ostream& os, const Vec<n, T>& v)
+{
+    os << "(";
+    for (int i = 0; i < n - 1; i++)
+        os << v.data[i] << ", ";
+    os << v.data[n - 1] << ")";
+    return os;
+}
 
 template<typename T>
-struct Vec2
+struct Vec<2, T>
 {
-    T x, y;
+    union
+    {
+        T data[2];
+        struct { T x, y; };
+    };
 
-    Vec2() : x(0), y(0) {}
-    Vec2(T x, T y) : x(x), y(y) {}
-    float magnitude() const { return std::sqrt(x * x + y * y); }
-    Vec2<T> normalized() const
+    Vec() : x(0), y(0) {}
+    Vec(T x, T y) : x(x), y(y) {}
+    float magnitude() const
+    {
+        return std::sqrt(x * x + y * y);
+    }
+    Vec<2, T> normalized() const
     {
         float m = magnitude();
-        return Vec2<T>(x / m, y / m);
+        return Vec<2, T>(x / m, y / m);
     }
-    Vec2<T>& Normalize() { return *this = *this / magnitude(); }
+    Vec<2, T>& Normalize()
+    {
+        return *this = *this / magnitude();
+    }
     T& operator [](int index)
     {
         switch (index)
@@ -27,86 +179,58 @@ struct Vec2
             default : throw std::out_of_range("Invalid index");
         }
     }
-    Vec2<T>& operator +=(const Vec2<T>& v) { return *this = *this + v; }
-    Vec2<T>& operator -=(const Vec2<T>& v) { return *this = *this - v; }
-    Vec2<T>& operator *=(float f) { return *this = *this * f; }
-    Vec2<T>& operator /=(float f) { return *this = *this / f; }
-    template<typename U>
-    operator Vec2<U>() const { return Vec2<U>(x, y); }
-    explicit operator Vec3<T>() const { return Vec3<T>(x, y, 0); }
+    T operator [](int index) const
+    {
+        switch (index)
+        {
+            case 0 : return x;
+            case 1 : return y;
+            default : throw std::out_of_range("Invalid index");
+        }
+    }
+    Vec<2, T>& operator +=(const Vec<2, T>& v)
+    {
+        return *this = *this + v;
+    }
+    Vec<2, T>& operator -=(const Vec<2, T>& v)
+    {
+        return *this = *this - v;
+    }
+    Vec<2, T>& operator *=(float d)
+    {
+        return *this = *this * d;
+    }
+    Vec<2, T>& operator /=(float d)
+    {
+        return *this = *this / d;
+    }
 };
 
 template<typename T>
-Vec2<T> operator +(const Vec2<T>& a, const Vec2<T>& b)
+struct Vec<3, T>
 {
-    return Vec2<T>(a.x + b.x, a.y + b.y);
-}
+    union
+    {
+        T data[3];
+        struct { T x, y, z; };
+    };
 
-template<typename T>
-Vec2<T> operator -(const Vec2<T>& v)
-{
-    return Vec2<T>(-v.x, -v.y);
-}
-
-template<typename T>
-Vec2<T> operator -(const Vec2<T>& a, const Vec2<T>& b)
-{
-    return Vec2<T>(a.x - b.x, a.y - b.y);
-}
-
-template<typename T>
-T operator *(const Vec2<T>& a, const Vec2<T>& b)
-{
-    return a.x * b.x + a.y * b.y;
-}
-
-template<typename T>
-Vec2<T> operator *(const Vec2<T>& a, float f)
-{
-    return Vec2<T>(a.x * f, a.y * f);
-}
-
-template<typename T>
-Vec2<T> operator /(const Vec2<T>& a, float f)
-{
-    return Vec2<T>(a.x / f, a.y / f);
-}
-
-template<typename T>
-T operator ^(const Vec2<T>& a, const Vec2<T>& b)
-{
-    return a.x * b.y - a.y * b.x;
-}
-
-template<typename T>
-std::istringstream& operator >>(std::istringstream& iss, Vec2<T>& v)
-{
-    iss >> v.x >> v.y;
-    return iss;
-}
-
-template<typename T>
-std::ostream& operator <<(std::ostream& s, const Vec2<T>& v)
-{
-    s << "(" << v.x << ", " << v.y << ")";
-    return s;
-}
-
-template<typename T>
-struct Vec3
-{
-    T x, y, z;
-
-    Vec3() : x(0), y(0), z(0) {}
-    Vec3(T x, T y, T z) : x(x), y(y), z(z) {}
-    Vec3(Vec2<T> v, T z) : x(v.x), y(v.y), z(z) {}
-    float magnitude() const { return std::sqrt(x * x + y * y + z * z); }
-    Vec3<T> normalized() const
+    Vec() : x(0), y(0), z(0) {}
+    Vec(T x, T y, T z) : x(x), y(y), z(z) {}
+    Vec(Vec<2, T> v, T z) : x(v.x), y(v.y), z(z) {}
+    float magnitude() const
+    {
+        return std::sqrt(x * x + y * y + z * z);
+    }
+    Vec<3, T> normalized() const
     {
         float m = magnitude();
-        return Vec3<T>(x / m, y / m, z / m);
+        return Vec<3, T>(x / m, y / m, z / m);
     }
-    Vec3<T>& Normalize() { return *this = *this / magnitude(); }
+    Vec<3, T>& Normalize()
+    {
+        return *this = *this / magnitude();
+    }
     T& operator [](int index)
     {
         switch (index)
@@ -114,107 +238,139 @@ struct Vec3
             case 0 : return x;
             case 1 : return y;
             case 2 : return z;
-            default : throw std::out_of_range("Invalid index.");
+            default : throw std::out_of_range("Invalid index");
         }
     }
-    Vec3<T>& operator +=(const Vec3<T>& v) { return *this = *this + v; }
-    Vec3<T>& operator -=(const Vec3<T>& v){ return *this = *this - v; }
-    Vec3<T>& operator *=(float f) { return *this = *this * f; }
-    Vec3<T>& operator /=(float f) { return *this = *this / f; }
-    operator Vec2<T>() const { return Vec2<T>(x, y); }
-    template<typename U>
-    operator Vec3<U>() const { return Vec3<U>(x, y, z); }
+    T operator [](int index) const
+    {
+        switch (index)
+        {
+            case 0 : return x;
+            case 1 : return y;
+            case 2 : return z;
+            default : throw std::out_of_range("Invalid index");
+        }
+    }
+    Vec<3, T>& operator +=(const Vec<3, T>& v)
+    {
+        return *this = *this + v;
+    }
+    Vec<3, T>& operator -=(const Vec<3, T>& v)
+    {
+        return *this = *this - v;
+    }
+    Vec<3, T>& operator *=(float d)
+    {
+        return *this = *this * d;
+    }
+    Vec<3, T>& operator /=(float d)
+    {
+        return *this = *this / d;
+    }
+    template<typename T>
+    operator Vec<2, T>()
+    {
+        return Vec<2, T>(x, y);
+    }
 };
 
 template<typename T>
-Vec3<T> operator +(const Vec3<T>& a, const Vec3<T>& b)
+struct Vec<4, T>
 {
-    return Vec3<T>(a.x + b.x, a.y + b.y, a.z + b.z);
-}
+    union
+    {
+        T data[4];
+        struct { T x, y, z, w; };
+    };
 
-template<typename T>
-Vec3<T> operator -(const Vec3<T>& v)
-{
-    return Vec3<T>(-v.x, -v.y, -v.z);
-}
+    Vec() : x(0), y(0), z(0), w(0) {}
+    Vec(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
+    Vec(Vec<3, T> v, T w) : x(v.x), y(v.y), z(v.z), w(v.w) {}
+    float magnitude() const
+    {
+        return std::sqrt(x * x + y * y + z * z + w * w);
+    }
+    Vec<4, T> normalized() const
+    {
+        float m = magnitude();
+        return Vec<4, T>(x / m, y / m, z / m, w / m);
+    }
+    Vec<4, T>& Normalize()
+    {
+        return *this = *this / magnitude();
+    }
+    T& operator [](int index)
+    {
+        switch (index)
+        {
+            case 0 : return x;
+            case 1 : return y;
+            case 2 : return z;
+            case 3 : return w;
+            default : throw std::out_of_range("Invalid index");
+        }
+    }
+    T operator [](int index) const
+    {
+        switch (index)
+        {
+            case 0 : return x;
+            case 1 : return y;
+            case 2 : return z;
+            case 3 : return w;
+            default : throw std::out_of_range("Invalid index");
+        }
+    }
+    Vec<4, T>& operator +=(const Vec<4, T>& v)
+    {
+        return *this = *this + v;
+    }
+    Vec<4, T>& operator -=(const Vec<4, T>& v)
+    {
+        return *this = *this - v;
+    }
+    Vec<4, T>& operator *=(float d)
+    {
+        return *this = *this * d;
+    }
+    Vec<4, T>& operator /=(float d)
+    {
+        return *this = *this / d;
+    }
+    operator Vec<3, float>() const
+    {
+        return Vec<3, float>(x / w, y / w, z / w);
+    }
+};
 
-template<typename T>
-Vec3<T> operator -(const Vec3<T>& a, const Vec3<T>& b)
-{
-    return Vec3<T>(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-// 点乘
-template<typename T>
-T operator *(const Vec3<T>& a, const Vec3<T>& b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
+using byte = unsigned char;
+using Vector2Int = Vec<2, int>;
+using Vector2 = Vec<2, float>;
+using Vector3 = Vec<3, float>;
+using Vector4 = Vec<4, float>;
+using Color = Vec<4, byte>;
 
-template<typename T>
-Vec3<T> operator *(const Vec3<T>& a, float f)
+template<>
+struct Vec<4, byte>
 {
-    return Vec3<T>(a.x * f, a.y * f, a.z * f);
-}
-
-template<typename T>
-Vec3<T> operator /(const Vec3<T>& a, float f)
-{
-    return Vec3<T>(a.x / f, a.y / f, a.z / f);
-}
+    byte B, G, R, A;
+    Vec() : B(0), G(0), R(0), A(255) {}
+    Vec(byte R, byte G, byte B) : B(B), G(G), R(R), A(255) {}
+    Vec(byte R, byte G, byte B, byte A) : B(B), G(G), R(R), A(A) {}
+    Vec(byte* data) : B(data[0]), G(data[1]), R(data[2]), A(data[3]) {}
+    static Color GetRandomColor()
+    {
+        return Color(std::rand()% 256, std::rand() % 256, std::rand() % 256);
+    }
+};
 
 // 叉乘
 template<typename T>
-Vec3<T> operator ^(const Vec3<T>& a, const Vec3<T>& b)
-{
-    return Vec3<T>(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
-}
-
+float operator ^(const Vec<2, T>& lhs, const Vec<2, T>& rhs);
+// 叉乘
 template<typename T>
-std::istringstream& operator >>(std::istringstream& iss, Vec3<T>& v)
-{
-    iss >> v.x >> v.y >> v.z;
-    return iss;
-}
-
-template<typename T>
-std::ostream& operator <<(std::ostream& os, const Vec3<T>& v)
-{
-    os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
-    return os;
-}
-
-typedef Vec2<int> Vector2Int;
-typedef Vec2<float> Vector2;
-typedef Vec3<int> Vector3Int;
-typedef Vec3<float> Vector3;
-
-struct Vector4
-{
-    float x, y, z, w;
-
-    Vector4();
-    Vector4(float x, float y, float z, float w);
-    Vector4(Vector3 v, float w);
-    float magnitude() const;
-    Vector4 normalized() const;
-    Vector4& Normalize();
-    float& operator [](int index);
-    float operator [](int index) const;
-    Vector4& operator +=(const Vector4& v);
-    Vector4& operator -=(const Vector4& v);
-    Vector4& operator *=(float f);
-    Vector4& operator /=(float f);
-    operator Vector3() const;
-};
-
-Vector4 operator +(const Vector4& a, const Vector4& b);
-Vector4 operator -(const Vector4& v);
-Vector4 operator -(const Vector4& a, const Vector4& b);
-float operator *(const Vector4& a, const Vector4& b);
-Vector4 operator *(const Vector4& a, float f);
-Vector4 operator /(const Vector4& a, float f);
-std::ostream& operator <<(std::ostream& os, Vector4 v);
-
+const Vec<3, T> operator ^(const Vec<3, T>& lhs, const Vec<3, T>& rhs);
 Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3);
+Vector3 BarycentricCoordinate(Vector3 p, Vector3 p1, Vector3 p2, Vector3 p3);
 float Distance(Vector3 p1, Vector3 p2);
 float Distance(Vector2 p1, Vector2 p2);

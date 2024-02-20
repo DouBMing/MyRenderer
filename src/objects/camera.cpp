@@ -10,28 +10,28 @@ using std::string;
 
 static float floatMax = std::numeric_limits<float>::max();
 
-Camera::Camera(int width, int height) : screenSize(width, height), image(width, height, 32),
+Camera::Camera(int pixelWidth, int pixelHeight) : pixelWidth(pixelWidth), pixelHeight(pixelHeight), image(pixelWidth, pixelHeight, 32),
     fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
 {
-    zBuffer = new float*[height];
-    for (int i = 0; i < screenSize.y; i++)
+    zBuffer = new float*[pixelHeight];
+    for (int i = 0; i < pixelHeight; i++)
     {
-        zBuffer[i] = new float[width];
-        for (int j = 0; j < screenSize.x; j++)
+        zBuffer[i] = new float[pixelWidth];
+        for (int j = 0; j < pixelWidth; j++)
         {
             zBuffer[i][j] = floatMax;
         }
     }
 }
 
-Camera::Camera(int width, int height, Vector3 position, Vector3 rotation) : Object(position, rotation),
-    screenSize(width, height), image(width, height, 32), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
+Camera::Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation) : Object(position, rotation),
+    pixelWidth(pixelWidth), pixelHeight(pixelHeight), image(pixelWidth, pixelHeight, 32), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
 {
-    zBuffer = new float*[height];
-    for (int i = 0; i < screenSize.y; i++)
+    zBuffer = new float*[pixelHeight];
+    for (int i = 0; i < pixelHeight; i++)
     {
-        zBuffer[i] = new float[width];
-        for (int j = 0; j < screenSize.x; j++)
+        zBuffer[i] = new float[pixelWidth];
+        for (int j = 0; j < pixelWidth; j++)
         {
             zBuffer[i][j] = floatMax;
         }
@@ -40,7 +40,7 @@ Camera::Camera(int width, int height, Vector3 position, Vector3 rotation) : Obje
 
 Camera::~Camera()
 {
-    for (int i = 0; i < screenSize.y; i++)
+    for (int i = 0; i < pixelHeight; i++)
         delete zBuffer[i];
     delete zBuffer;
 }
@@ -54,15 +54,15 @@ void Camera::Render()
     Output();
 }
 
-void Camera::Render(Model& model)
+void Camera::Render(const Model& model)
 {
     // 顶点变换
-    VertexTransform(model);
+    VertexProcessing(model);
     // 采样并绘制
     Rasterization(model);
 }
 
-void Camera::VertexTransform(Model& model)
+void Camera::VertexProcessing(const Model& model)
 {
 #ifdef DEBUG
     int nVerts = model.nVerts();
@@ -82,7 +82,7 @@ void Camera::VertexTransform(Model& model)
     vertexBuffer = mView * vertexBuffer;
     std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
     // 观察空间到投影空间
-    float aspect = (float)screenSize.x / screenSize.y; // 横纵比
+    float aspect = (float)pixelWidth / pixelHeight; // 横纵比
     Matrix4x4 mPersp = Matrix4x4::Perspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
     vertexBuffer = mPersp * vertexBuffer;
     // 投影空间到NDC
@@ -90,40 +90,49 @@ void Camera::VertexTransform(Model& model)
         vertexBuffer[i] = vertexBuffer[i] / vertexBuffer[i].w;
     // NDC到屏幕空间
     Matrix4x4 mScreen = Matrix4x4({
-        {screenSize.x / 2.0f, 0, 0, screenSize.x / 2.0f},
-        {0, screenSize.y / 2.0f, 0, screenSize.y / 2.0f},
+        {pixelWidth / 2.0f, 0, 0, pixelWidth / 2.0f},
+        {0, pixelHeight / 2.0f, 0, pixelHeight / 2.0f},
         {0, 0, 1, 0},
         {0, 0, 0, 1}});
     vertexBuffer = mScreen * vertexBuffer;
     std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
 #else
     int nVerts = model.nVerts();
-    vertexBuffer.resize(nVerts);
+    vertexBuffer_WorldCoords.resize(nVerts);
+    vertexBuffer_ScreenCoords.resize(nVerts);
     // 模型坐标到世界坐标
     Matrix4x4 mLTW = model.transform.localToWorldMatrix();
     for (int i = 0; i < nVerts; i++)
-        vertexBuffer[i] = mLTW * Vector4(model[i], 1);
+        vertexBuffer_WorldCoords[i] = mLTW * Vector4(model[i], 1);
     // 世界空间到观察空间
     Matrix4x4 mView = Matrix4x4::LookAt(transform.position, transform.forward(), transform.up());
-    vertexBuffer = mView * vertexBuffer;
+    TransformVertices(mView, vertexBuffer_WorldCoords, vertexBuffer_ScreenCoords);
     // 观察空间到投影空间
-    float aspect = (float)screenSize.x / screenSize.y; // 横纵比
+    float aspect = (float)pixelWidth / pixelHeight; // 横纵比
     Matrix4x4 mPersp = Matrix4x4::Perspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
-    vertexBuffer = mPersp * vertexBuffer;
+    TransformVertices(mPersp, vertexBuffer_WorldCoords, vertexBuffer_ScreenCoords);
     // 投影空间到NDC
     for (int i = 0; i < nVerts; i++)
-        vertexBuffer[i] = vertexBuffer[i] / vertexBuffer[i].w;
+        vertexBuffer_ScreenCoords[i] = vertexBuffer_ScreenCoords[i] / vertexBuffer_ScreenCoords[i].w;
     // NDC到屏幕空间
     Matrix4x4 mScreen = Matrix4x4({
-        {screenSize.x / 2.0f, 0, 0, screenSize.x / 2.0f},
-        {0, screenSize.y / 2.0f, 0, screenSize.y / 2.0f},
+        {pixelWidth / 2.0f, 0, 0, pixelWidth / 2.0f},
+        {0, pixelHeight / 2.0f, 0, pixelHeight / 2.0f},
         {0, 0, 1, 0},
         {0, 0, 0, 1}});
-    vertexBuffer = mScreen * vertexBuffer;
+    TransformVertices(mScreen, vertexBuffer_WorldCoords, vertexBuffer_ScreenCoords);
 #endif
 }
 
-void Camera::Rasterization(Model& model)
+void Camera::TransformVertices(const Matrix4x4& m, const std::vector<Vector4>& src, std::vector<Vector4>& dst)
+{
+    for (int i = 0; i < src.size(); i++)
+    {
+        dst[i] = m * src[i];
+    }
+}
+
+void Camera::Rasterization(const Model& model)
 {
     if (model.diffuseMap == nullptr)
     {
@@ -133,14 +142,14 @@ void Camera::Rasterization(Model& model)
     TextureMapping(model);
 }
 
-void Camera::TextureMapping(Model& model)
+void Camera::TextureMapping(const Model& model)
 {
     for (int i = 0; i < model.nFaces(); i++)
     {
         Face face = model.face(i);
-        Vector3 p1 = vertexBuffer[face.vi[0]];
-        Vector3 p2 = vertexBuffer[face.vi[1]];
-        Vector3 p3 = vertexBuffer[face.vi[2]];
+        Vector3 p1 = vertexBuffer_ScreenCoords[face.vi[0]];
+        Vector3 p2 = vertexBuffer_ScreenCoords[face.vi[1]];
+        Vector3 p3 = vertexBuffer_ScreenCoords[face.vi[2]];
 
         Vector2 minPoint, maxPoint;
         minPoint.x = std::min(std::min(p1.x, p2.x), p3.x);
@@ -148,15 +157,15 @@ void Camera::TextureMapping(Model& model)
         maxPoint.x = std::max(std::max(p1.x, p2.x), p3.x);
         maxPoint.y = std::max(std::max(p1.y, p2.y), p3.y);
         // 剔除边界外的三角形
-        if (minPoint.x > screenSize.x || minPoint.y > screenSize.y || maxPoint.x < 0 || maxPoint.y < 0)
+        if (minPoint.x > pixelWidth || minPoint.y > pixelHeight || maxPoint.x < 0 || maxPoint.y < 0)
             return;
         for (int y = minPoint.y; y < maxPoint.y; y++)
         {
-            if (y < 0 || y >= screenSize.y)
+            if (y < 0 || y >= pixelHeight)
                 continue;
             for (int x = minPoint.x; x < maxPoint.x; x++)
             {
-                if (x < 0 || x >= screenSize.x)
+                if (x < 0 || x >= pixelWidth)
                     continue;
                 Vector2 p(x, y);
                 Vector3 baryCoord = BarycentricCoordinate(p, p1, p2, p3);
@@ -168,11 +177,15 @@ void Camera::TextureMapping(Model& model)
                 if (zBuffer[y][x] > z)
                 {
                     zBuffer[y][x] = z;
+
+                    
+                    Vector3 bary2 = BarycentricCoordinate(p, p1, p2, p3);
+
                     Vector2 uv1 = model.texCoord(face.ti[0]);
                     Vector2 uv2 = model.texCoord(face.ti[1]);
                     Vector2 uv3 = model.texCoord(face.ti[2]);
-                    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-                    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
+                    float u = uv1[0] * bary2[0] + uv2[0] * bary2[1] + uv3[0] * bary2[2];
+                    float v = uv1[1] * bary2[0] + uv2[1] * bary2[1] + uv3[1] * bary2[2];
                     Color c = model.diffuseMap->Get(u * model.diffuseMap->width, v * model.diffuseMap->height);
                     image.Set({x, y}, c);
                 }
@@ -181,14 +194,14 @@ void Camera::TextureMapping(Model& model)
     }
 }
 
-void Camera::FillRandomColor(Model& model)
+void Camera::FillRandomColor(const Model& model)
 {
     for (int i = 0; i < model.nFaces(); i++)
     {
         Face face = model.face(i);
-        Vector3 p1 = vertexBuffer[face.vi[0]];
-        Vector3 p2 = vertexBuffer[face.vi[1]];
-        Vector3 p3 = vertexBuffer[face.vi[2]];
+        Vector3 p1 = vertexBuffer_ScreenCoords[face.vi[0]];
+        Vector3 p2 = vertexBuffer_ScreenCoords[face.vi[1]];
+        Vector3 p3 = vertexBuffer_ScreenCoords[face.vi[2]];
         Color c = Color::GetRandomColor();
 
         Vector2 minPoint, maxPoint;
@@ -197,15 +210,15 @@ void Camera::FillRandomColor(Model& model)
         maxPoint.x = std::max(std::max(p1.x, p2.x), p3.x);
         maxPoint.y = std::max(std::max(p1.y, p2.y), p3.y);
         // 剔除边界外的三角形
-        if (minPoint.x > screenSize.x || minPoint.y > screenSize.y || maxPoint.x < 0 || maxPoint.y < 0)
+        if (minPoint.x > pixelWidth || minPoint.y > pixelHeight || maxPoint.x < 0 || maxPoint.y < 0)
             return;
         for (int y = minPoint.y; y < maxPoint.y; y++)
         {
-            if (y < 0 || y >= screenSize.y)
+            if (y < 0 || y >= pixelHeight)
                 continue;
             for (int x = minPoint.x; x < maxPoint.x; x++)
             {
-                if (x < 0 || x >= screenSize.x)
+                if (x < 0 || x >= pixelWidth)
                     continue;
                 Vector2 p(x, y);
                 Vector3 baryCoord = BarycentricCoordinate(p, p1, p2, p3);
@@ -224,7 +237,7 @@ void Camera::FillRandomColor(Model& model)
     }
 }
 
-void Camera::DrawWireframe(Model& model)
+void Camera::DrawWireframe(const Model& model)
 {
     Painter painter(image);
 
@@ -234,8 +247,8 @@ void Camera::DrawWireframe(Model& model)
         Face face = model.face(i);
         for (int j = 0; j < 3; j++)
         {
-            Vector4 p1 = vertexBuffer[face.vi[j]];
-            Vector4 p2 = vertexBuffer[face.vi[(j + 1) % 3]];
+            Vector4 p1 = vertexBuffer_ScreenCoords[face.vi[j]];
+            Vector4 p2 = vertexBuffer_ScreenCoords[face.vi[(j + 1) % 3]];
             painter.Line(Vector2Int(p1.x, p1.y), Vector2Int(p2.x, p2.y), c);
         }
     }
@@ -254,10 +267,10 @@ void Camera::Output()
     std::cin >> c;
     if (c == 'N')
         return;
-    Bitmap zBufferImage(screenSize.x, screenSize.y, 32);
-    for (int i = 0; i < screenSize.y; i++)
+    Bitmap zBufferImage(pixelWidth, pixelHeight, 32);
+    for (int i = 0; i < pixelHeight; i++)
     {
-        for (int j = 0; j < screenSize.x; j++)
+        for (int j = 0; j < pixelWidth; j++)
         {
             byte c = zBuffer[i][j] > 1 ? 0 : (1.0 - zBuffer[i][j]) / 2 * 255;
             image.Set({j, i}, Color{c, c, c});

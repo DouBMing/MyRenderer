@@ -21,14 +21,14 @@ public:
     Model(const std::string& modelFile, const std::string& textureFile, Vector3 position, Vector3 rotation, Vector3 scale);
     Model(const Model& model);
     ~Model();
-    int nVerts();
-    int nFaces();
-    Vector3 vert(int index);
-    Vector2 texCoord(int index);
-    Vector3 normal(int index);
-    Face face(int index);
-    Vector3 GetBoundsSize();
-    Vector3 operator [](int index);  // 通过索引器获取顶点
+    int nVerts() const;
+    int nFaces() const;
+    Vector3 vert(int index) const;
+    Vector2 texCoord(int index) const;
+    Vector3 normal(int index) const;
+    Face face(int index) const;
+    Vector3 GetBoundsSize() const;
+    Vector3 operator [](int index) const;  // 通过索引器获取顶点
 private:
     std::vector<Vector3> verts;      // 顶点坐标
     std::vector<Vector2> texCoords;  // 材质坐标
