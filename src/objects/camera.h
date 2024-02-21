@@ -17,10 +17,11 @@ private:
     float fieldOfView;
     float nearClipPlane;
     float farClipPlane;
-    Bitmap image;
+    Matrix4x4 worldToCameraMatrix;  // 世界
     std::vector<Vector4> vertexBuffer_WorldCoords;
     std::vector<Vector4> vertexBuffer_ScreenCoords;
     float** zBuffer;
+    Bitmap screen;
     void Render(const Model& model);
     void VertexProcessing(const Model& model);   // 顶点变换，最终变换为屏幕空间坐标
     void TransformVertices(const Matrix4x4& m, const std::vector<Vector4>& src, std::vector<Vector4>& dst);

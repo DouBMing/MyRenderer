@@ -22,5 +22,5 @@ Vector3 Transform::forward() const
 
 Matrix4x4 Transform::localToWorldMatrix() const
 {
-    return Matrix4x4::TRS(position, rotation, scale);
+    return MatrixTRS(position, rotation, scale);
 }

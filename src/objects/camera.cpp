@@ -6,11 +6,11 @@
 #include <limits>
 using std::string;
 
-#define _DEBUG
+#define DEBUG
 
 static float floatMax = std::numeric_limits<float>::max();
 
-Camera::Camera(int pixelWidth, int pixelHeight) : pixelWidth(pixelWidth), pixelHeight(pixelHeight), image(pixelWidth, pixelHeight, 32),
+Camera::Camera(int pixelWidth, int pixelHeight) : pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32),
     fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[pixelHeight];
@@ -25,7 +25,7 @@ Camera::Camera(int pixelWidth, int pixelHeight) : pixelWidth(pixelWidth), pixelH
 }
 
 Camera::Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation) : Object(position, rotation),
-    pixelWidth(pixelWidth), pixelHeight(pixelHeight), image(pixelWidth, pixelHeight, 32), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
+    pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[pixelHeight];
     for (int i = 0; i < pixelHeight; i++)
@@ -66,36 +66,41 @@ void Camera::VertexProcessing(const Model& model)
 {
 #ifdef DEBUG
     int nVerts = model.nVerts();
-    vertexBuffer.reserve(nVerts);
+    vertexBuffer_WorldCoords.resize(nVerts);
+    vertexBuffer_ScreenCoords.resize(nVerts);
     std::cerr << "Point :\t" << model[0] << "\n";
     std::cerr << "R :\t" << model.transform.rotation << "\n";
-    std::cerr << "mR :\t" << Matrix4x4::Rotate(model.transform.rotation) << "\n";
+    std::cerr << "mR :\n" << MatrixRotate(model.transform.rotation) << "\n";
     // 模型坐标到世界坐标
     Matrix4x4 mLTW = model.transform.localToWorldMatrix();
-    std::cerr << "mLTW :\t" << mLTW << "\n";
     for (int i = 0; i < nVerts; i++)
-        vertexBuffer.push_back(mLTW * Vector4(model[i], 1));
-    std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
+        vertexBuffer_WorldCoords[i] = mLTW * Vector4(model[i], 1);
+    std::cerr << "mLTW :\n" << mLTW << "\n";
+    std::cerr << "Point :\t" << vertexBuffer_WorldCoords[0] << "\n";
     // 世界空间到观察空间
-    Matrix4x4 mView = Matrix4x4::LookAt(transform.position, transform.forward(), transform.up());
-    std::cerr << "mView :\t" << mView << "\n";
-    vertexBuffer = mView * vertexBuffer;
-    std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
+    Matrix4x4 mView = MatrixLookAt(transform.position, transform.forward(), transform.up());
+    TransformVertices(mView, vertexBuffer_WorldCoords, vertexBuffer_ScreenCoords);
+    std::cerr << "mView :\n" << mView << "\n";
+    std::cerr << "Point :\t" << vertexBuffer_ScreenCoords[0] << "\n";
     // 观察空间到投影空间
     float aspect = (float)pixelWidth / pixelHeight; // 横纵比
-    Matrix4x4 mPersp = Matrix4x4::Perspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
-    vertexBuffer = mPersp * vertexBuffer;
+    Matrix4x4 mPersp = MatrixPerspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
+    TransformVertices(mPersp, vertexBuffer_ScreenCoords, vertexBuffer_ScreenCoords);
+    std::cerr << "mPersp :\n" << mPersp << "\n";
+    std::cerr << "Point :\t" << vertexBuffer_ScreenCoords[0] << "\n";
     // 投影空间到NDC
     for (int i = 0; i < nVerts; i++)
-        vertexBuffer[i] = vertexBuffer[i] / vertexBuffer[i].w;
+        vertexBuffer_ScreenCoords[i] = vertexBuffer_ScreenCoords[i] / vertexBuffer_ScreenCoords[i].w;
+    std::cerr << "Point :\t" << vertexBuffer_ScreenCoords[0] << "\n";
     // NDC到屏幕空间
     Matrix4x4 mScreen = Matrix4x4({
         {pixelWidth / 2.0f, 0, 0, pixelWidth / 2.0f},
         {0, pixelHeight / 2.0f, 0, pixelHeight / 2.0f},
         {0, 0, 1, 0},
         {0, 0, 0, 1}});
-    vertexBuffer = mScreen * vertexBuffer;
-    std::cerr << "Point :\t" << vertexBuffer[0] << "\n";
+    TransformVertices(mScreen, vertexBuffer_ScreenCoords, vertexBuffer_ScreenCoords);
+    std::cerr << "mScreen :\n" << mScreen << "\n";
+    std::cerr << "Point :\t" << vertexBuffer_ScreenCoords[0] << "\n";
 #else
     int nVerts = model.nVerts();
     vertexBuffer_WorldCoords.resize(nVerts);
@@ -105,12 +110,12 @@ void Camera::VertexProcessing(const Model& model)
     for (int i = 0; i < nVerts; i++)
         vertexBuffer_WorldCoords[i] = mLTW * Vector4(model[i], 1);
     // 世界空间到观察空间
-    Matrix4x4 mView = Matrix4x4::LookAt(transform.position, transform.forward(), transform.up());
+    Matrix4x4 mView = MatrixLookAt(transform.position, transform.forward(), transform.up());
     TransformVertices(mView, vertexBuffer_WorldCoords, vertexBuffer_ScreenCoords);
     // 观察空间到投影空间
     float aspect = (float)pixelWidth / pixelHeight; // 横纵比
-    Matrix4x4 mPersp = Matrix4x4::Perspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
-    TransformVertices(mPersp, vertexBuffer_WorldCoords, vertexBuffer_ScreenCoords);
+    Matrix4x4 mPersp = MatrixPerspective(fieldOfView, aspect, nearClipPlane, farClipPlane);
+    TransformVertices(mPersp, vertexBuffer_ScreenCoords, vertexBuffer_ScreenCoords);
     // 投影空间到NDC
     for (int i = 0; i < nVerts; i++)
         vertexBuffer_ScreenCoords[i] = vertexBuffer_ScreenCoords[i] / vertexBuffer_ScreenCoords[i].w;
@@ -120,7 +125,7 @@ void Camera::VertexProcessing(const Model& model)
         {0, pixelHeight / 2.0f, 0, pixelHeight / 2.0f},
         {0, 0, 1, 0},
         {0, 0, 0, 1}});
-    TransformVertices(mScreen, vertexBuffer_WorldCoords, vertexBuffer_ScreenCoords);
+    TransformVertices(mScreen, vertexBuffer_ScreenCoords, vertexBuffer_ScreenCoords);
 #endif
 }
 
@@ -178,8 +183,9 @@ void Camera::TextureMapping(const Model& model)
                 {
                     zBuffer[y][x] = z;
 
-                    
-                    Vector3 bary2 = BarycentricCoordinate(p, p1, p2, p3);
+                    //Vector3 wp = worldTo
+                    //Vector3 bary2 = BarycentricCoordinate(p, p1, p2, p3);
+                    Vector3 bary2 = baryCoord;
 
                     Vector2 uv1 = model.texCoord(face.ti[0]);
                     Vector2 uv2 = model.texCoord(face.ti[1]);
@@ -187,7 +193,7 @@ void Camera::TextureMapping(const Model& model)
                     float u = uv1[0] * bary2[0] + uv2[0] * bary2[1] + uv3[0] * bary2[2];
                     float v = uv1[1] * bary2[0] + uv2[1] * bary2[1] + uv3[1] * bary2[2];
                     Color c = model.diffuseMap->Get(u * model.diffuseMap->width, v * model.diffuseMap->height);
-                    image.Set({x, y}, c);
+                    screen.Set({x, y}, c);
                 }
             }
         }
@@ -230,7 +236,7 @@ void Camera::FillRandomColor(const Model& model)
                 if (zBuffer[y][x] > z)
                 {
                     zBuffer[y][x] = z;
-                    image.Set({x, y}, c);
+                    screen.Set({x, y}, c);
                 }
             }
         }
@@ -239,7 +245,7 @@ void Camera::FillRandomColor(const Model& model)
 
 void Camera::DrawWireframe(const Model& model)
 {
-    Painter painter(image);
+    Painter painter(screen);
 
     Color c(255, 255, 255);
     for (int i = 0; i < model.nFaces(); i++)
@@ -260,7 +266,7 @@ void Camera::Output()
     string imageName;
     std::cout << "image name:" << std::endl;
     std::cin >> imageName;
-    image.Write(imagePath + imageName + ".bmp");
+    screen.Write(imagePath + imageName + ".bmp");
     // 输出深度缓冲图像
     char c;
     std::cout << "Output Z-Buffer Image?(Y/N)" << std::endl;
@@ -273,8 +279,8 @@ void Camera::Output()
         for (int j = 0; j < pixelWidth; j++)
         {
             byte c = zBuffer[i][j] > 1 ? 0 : (1.0 - zBuffer[i][j]) / 2 * 255;
-            image.Set({j, i}, Color{c, c, c});
+            screen.Set({j, i}, Color{c, c, c});
         }
     }
-    image.Write(imagePath + imageName + "_ZBuffer.bmp");
+    screen.Write(imagePath + imageName + "_ZBuffer.bmp");
 }

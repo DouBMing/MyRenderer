@@ -56,12 +56,38 @@ CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/tr1/poly_hermite.tcc \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/tr1/poly_laguerre.tcc \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/tr1/riemann_zeta.tcc \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/vector \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/allocator.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32/bits/c++allocator.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/ext/new_allocator.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/new \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/exception \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/exception.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/exception_ptr.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/cxxabi_init_exception.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/stddef.h \
+ D:/Program\ Files/Mingw/mingw64/x86_64-w64-mingw32/include/stddef.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/typeinfo \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/hash_bytes.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/nested_exception.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/memoryfwd.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_construct.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/ext/alloc_traits.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/alloc_traits.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_uninitialized.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/utility \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_relops.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/initializer_list \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_vector.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_bvector.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/functional_hash.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/range_access.h \
+ D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/vector.tcc \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/sstream \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/istream \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/ios \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/iosfwd \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stringfwd.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/memoryfwd.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/postypes.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/cwchar \
  D:/Program\ Files/Mingw/mingw64/x86_64-w64-mingw32/include/wchar.h \
@@ -71,16 +97,6 @@ CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/x86_64-w64-mingw32/include/swprintf.inl \
  D:/Program\ Files/Mingw/mingw64/x86_64-w64-mingw32/include/sec_api/wchar_s.h \
  D:/Program\ Files/Mingw/mingw64/x86_64-w64-mingw32/include/_mingw_print_pop.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/exception \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/exception.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/exception_ptr.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/cxxabi_init_exception.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/stddef.h \
- D:/Program\ Files/Mingw/mingw64/x86_64-w64-mingw32/include/stddef.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/typeinfo \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/hash_bytes.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/new \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/nested_exception.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/char_traits.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/cstdint \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/stdint.h \
@@ -111,20 +127,12 @@ CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32/bits/atomic_word.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/locale_classes.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/string \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/allocator.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32/bits/c++allocator.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/ext/new_allocator.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/ostream_insert.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/cxxabi_forced.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_function.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward/binders.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/range_access.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/initializer_list \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/basic_string.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/ext/alloc_traits.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/alloc_traits.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/string_view \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/functional_hash.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/string_view.tcc \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/ext/string_conversions.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/cstdlib \
@@ -151,12 +159,4 @@ CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/istream.tcc \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/sstream.tcc \
  D:/CS/CG/MyRenderer/src/math/quaternion.h \
- D:/CS/CG/MyRenderer/src/math/matrix.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/vector \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_construct.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_uninitialized.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/utility \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_relops.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_vector.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/stl_bvector.h \
- D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/vector.tcc
+ D:/CS/CG/MyRenderer/src/math/matrix.h

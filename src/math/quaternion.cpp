@@ -24,7 +24,7 @@ Quaternion::Quaternion(Vector3 eulerAngles)
 
 Vector3 operator *(Quaternion q, Vector3 v)
 {
-    return Matrix4x4::Rotate(q) * Vector4(v, 1);
+    return MatrixRotate(q) * Vector4(v, 1);
 }
 
 Quaternion operator *(Quaternion lhs, Quaternion rhs)
