@@ -17,7 +17,8 @@ private:
     float fieldOfView;
     float nearClipPlane;
     float farClipPlane;
-    Matrix4x4 worldToCameraMatrix;  // 世界
+    Matrix4x4 worldToScreenMatrix() const;  // 世界坐标到屏幕空间的矩阵
+    Matrix4x4 screenToWorldMatrix() const;  // 屏幕空间到世界空间的矩阵
     std::vector<Vector4> vertexBuffer_WorldCoords;
     std::vector<Vector4> vertexBuffer_ScreenCoords;
     float** zBuffer;

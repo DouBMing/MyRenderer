@@ -24,3 +24,8 @@ Matrix4x4 Transform::localToWorldMatrix() const
 {
     return MatrixTRS(position, rotation, scale);
 }
+
+Matrix4x4 Transform::worldToLocalMatrix() const
+{
+    return MatrixTRS(position, rotation, scale).inverse();
+}

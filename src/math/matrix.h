@@ -237,8 +237,6 @@ struct Matrix<n, n>
     // 去除第r行、第c列后的子矩阵
     Matrix<n - 1, n - 1> submatrix(int r, int c) const
     {
-        if (n == 2)
-            return Matrix<1, 1>(m[!r][!c]);
         Matrix<n - 1, n - 1> sub;
         for (int i = 0; i < n - 1; i++)
         {

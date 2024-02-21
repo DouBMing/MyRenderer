@@ -355,7 +355,16 @@ struct Vector<4, byte>
     {
         return Color(std::rand()% 256, std::rand() % 256, std::rand() % 256);
     }
+    static Color Red;
+    static Color Green;
+    static Color Blue;
+    static Color Yellow;
 };
+
+Color Color::Red(255, 0, 0);
+Color Color::Green(0, 255, 0);
+Color Color::Blue(0, 0, 255);
+Color Color::Yellow(255, 255, 0);
 
 // 叉乘
 template<typename T>

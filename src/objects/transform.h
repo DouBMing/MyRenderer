@@ -15,5 +15,5 @@ public:
     Vector3 up() const;
     Vector3 forward() const;
     Matrix4x4 localToWorldMatrix() const;
-    Matrix4x4 worldToLocalMatrix();
+    Matrix4x4 worldToLocalMatrix() const;
 };
