@@ -162,6 +162,7 @@ CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj: \
  D:/CS/CG/MyRenderer/src/math/quaternion.h \
  D:/CS/CG/MyRenderer/src/math/matrix.h \
  D:/CS/CG/MyRenderer/src/graphics/bitmap.h \
+ D:/CS/CG/MyRenderer/src/graphics/shader.h \
  D:/CS/CG/MyRenderer/src/scene/scene.h \
  D:/CS/CG/MyRenderer/src/objects/light.h \
  D:/CS/CG/MyRenderer/src/graphics/painter.h \

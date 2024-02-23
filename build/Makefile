@@ -177,6 +177,30 @@ src/graphics/painter.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/painter.cpp.s
 .PHONY : src/graphics/painter.cpp.s
 
+src/graphics/shader.obj: src/graphics/shader.cpp.obj
+.PHONY : src/graphics/shader.obj
+
+# target to build an object file
+src/graphics/shader.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj
+.PHONY : src/graphics/shader.cpp.obj
+
+src/graphics/shader.i: src/graphics/shader.cpp.i
+.PHONY : src/graphics/shader.i
+
+# target to preprocess a source file
+src/graphics/shader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/shader.cpp.i
+.PHONY : src/graphics/shader.cpp.i
+
+src/graphics/shader.s: src/graphics/shader.cpp.s
+.PHONY : src/graphics/shader.s
+
+# target to generate assembly for a file
+src/graphics/shader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/shader.cpp.s
+.PHONY : src/graphics/shader.cpp.s
+
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
 
@@ -432,6 +456,9 @@ help:
 	@echo "... src/graphics/painter.obj"
 	@echo "... src/graphics/painter.i"
 	@echo "... src/graphics/painter.s"
+	@echo "... src/graphics/shader.obj"
+	@echo "... src/graphics/shader.i"
+	@echo "... src/graphics/shader.s"
 	@echo "... src/main.obj"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

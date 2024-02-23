@@ -164,4 +164,5 @@ CMakeFiles/Renderer.dir/src/main.cpp.obj: \
  D:/CS/CG/MyRenderer/src/math/quaternion.h \
  D:/CS/CG/MyRenderer/src/math/matrix.h \
  D:/CS/CG/MyRenderer/src/graphics/bitmap.h \
+ D:/CS/CG/MyRenderer/src/graphics/shader.h \
  D:/CS/CG/MyRenderer/src/objects/light.h

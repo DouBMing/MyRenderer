@@ -4,8 +4,10 @@
 class Light : public Object
 {
 public:
-    Light();
-    Light(Vector3 position, Vector3 rotation);
-private:
+    float intensity;
+    Color color;
     
+    Light(float intensity);
+    Light(Vector3 position, Vector3 rotation, float intensity);
+    Vector3 direction() const;
 };

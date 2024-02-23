@@ -13,6 +13,12 @@
 },
 {
   "directory": "D:/CS/CG/MyRenderer/build",
+  "command": "\"D:/Program Files/Mingw/mingw64/bin/g++.exe\"  @CMakeFiles/Renderer.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj -c D:/CS/CG/MyRenderer/src/graphics/shader.cpp",
+  "file": "D:/CS/CG/MyRenderer/src/graphics/shader.cpp",
+  "output": "CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj"
+},
+{
+  "directory": "D:/CS/CG/MyRenderer/build",
   "command": "\"D:/Program Files/Mingw/mingw64/bin/g++.exe\"  @CMakeFiles/Renderer.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles/Renderer.dir/src/main.cpp.obj -c D:/CS/CG/MyRenderer/src/main.cpp",
   "file": "D:/CS/CG/MyRenderer/src/main.cpp",
   "output": "CMakeFiles/Renderer.dir/src/main.cpp.obj"

@@ -99,11 +99,26 @@ CMakeFiles/Renderer.dir/src/graphics/painter.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Renderer.dir/src/graphics/painter.cpp.s"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:/CS/CG/MyRenderer/src/graphics/painter.cpp -o CMakeFiles/Renderer.dir/src/graphics/painter.cpp.s
 
+CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj: CMakeFiles/Renderer.dir/flags.make
+CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
+CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj: D:/CS/CG/MyRenderer/src/graphics/shader.cpp
+CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj"
+	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj -MF CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj.d -o CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj -c D:/CS/CG/MyRenderer/src/graphics/shader.cpp
+
+CMakeFiles/Renderer.dir/src/graphics/shader.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Renderer.dir/src/graphics/shader.cpp.i"
+	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:/CS/CG/MyRenderer/src/graphics/shader.cpp > CMakeFiles/Renderer.dir/src/graphics/shader.cpp.i
+
+CMakeFiles/Renderer.dir/src/graphics/shader.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Renderer.dir/src/graphics/shader.cpp.s"
+	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:/CS/CG/MyRenderer/src/graphics/shader.cpp -o CMakeFiles/Renderer.dir/src/graphics/shader.cpp.s
+
 CMakeFiles/Renderer.dir/src/main.cpp.obj: CMakeFiles/Renderer.dir/flags.make
 CMakeFiles/Renderer.dir/src/main.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/main.cpp.obj: D:/CS/CG/MyRenderer/src/main.cpp
 CMakeFiles/Renderer.dir/src/main.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Renderer.dir/src/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Renderer.dir/src/main.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/main.cpp.obj -MF CMakeFiles/Renderer.dir/src/main.cpp.obj.d -o CMakeFiles/Renderer.dir/src/main.cpp.obj -c D:/CS/CG/MyRenderer/src/main.cpp
 
 CMakeFiles/Renderer.dir/src/main.cpp.i: cmake_force
@@ -118,7 +133,7 @@ CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj: CMakeFiles/Renderer.dir/flags.m
 CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj: D:/CS/CG/MyRenderer/src/math/matrix.cpp
 CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj -MF CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj.d -o CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj -c D:/CS/CG/MyRenderer/src/math/matrix.cpp
 
 CMakeFiles/Renderer.dir/src/math/matrix.cpp.i: cmake_force
@@ -133,7 +148,7 @@ CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj: CMakeFiles/Renderer.dir/fla
 CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj: D:/CS/CG/MyRenderer/src/math/quaternion.cpp
 CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj -MF CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj.d -o CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj -c D:/CS/CG/MyRenderer/src/math/quaternion.cpp
 
 CMakeFiles/Renderer.dir/src/math/quaternion.cpp.i: cmake_force
@@ -148,7 +163,7 @@ CMakeFiles/Renderer.dir/src/math/vector.cpp.obj: CMakeFiles/Renderer.dir/flags.m
 CMakeFiles/Renderer.dir/src/math/vector.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/math/vector.cpp.obj: D:/CS/CG/MyRenderer/src/math/vector.cpp
 CMakeFiles/Renderer.dir/src/math/vector.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Renderer.dir/src/math/vector.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Renderer.dir/src/math/vector.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/math/vector.cpp.obj -MF CMakeFiles/Renderer.dir/src/math/vector.cpp.obj.d -o CMakeFiles/Renderer.dir/src/math/vector.cpp.obj -c D:/CS/CG/MyRenderer/src/math/vector.cpp
 
 CMakeFiles/Renderer.dir/src/math/vector.cpp.i: cmake_force
@@ -163,7 +178,7 @@ CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj: CMakeFiles/Renderer.dir/flag
 CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj: D:/CS/CG/MyRenderer/src/objects/camera.cpp
 CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj -MF CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj.d -o CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj -c D:/CS/CG/MyRenderer/src/objects/camera.cpp
 
 CMakeFiles/Renderer.dir/src/objects/camera.cpp.i: cmake_force
@@ -178,7 +193,7 @@ CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: CMakeFiles/Renderer.dir/flags
 CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: D:/CS/CG/MyRenderer/src/objects/light.cpp
 CMakeFiles/Renderer.dir/src/objects/light.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Renderer.dir/src/objects/light.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Renderer.dir/src/objects/light.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/objects/light.cpp.obj -MF CMakeFiles/Renderer.dir/src/objects/light.cpp.obj.d -o CMakeFiles/Renderer.dir/src/objects/light.cpp.obj -c D:/CS/CG/MyRenderer/src/objects/light.cpp
 
 CMakeFiles/Renderer.dir/src/objects/light.cpp.i: cmake_force
@@ -193,7 +208,7 @@ CMakeFiles/Renderer.dir/src/objects/model.cpp.obj: CMakeFiles/Renderer.dir/flags
 CMakeFiles/Renderer.dir/src/objects/model.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/objects/model.cpp.obj: D:/CS/CG/MyRenderer/src/objects/model.cpp
 CMakeFiles/Renderer.dir/src/objects/model.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Renderer.dir/src/objects/model.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Renderer.dir/src/objects/model.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/objects/model.cpp.obj -MF CMakeFiles/Renderer.dir/src/objects/model.cpp.obj.d -o CMakeFiles/Renderer.dir/src/objects/model.cpp.obj -c D:/CS/CG/MyRenderer/src/objects/model.cpp
 
 CMakeFiles/Renderer.dir/src/objects/model.cpp.i: cmake_force
@@ -208,7 +223,7 @@ CMakeFiles/Renderer.dir/src/objects/object.cpp.obj: CMakeFiles/Renderer.dir/flag
 CMakeFiles/Renderer.dir/src/objects/object.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/objects/object.cpp.obj: D:/CS/CG/MyRenderer/src/objects/object.cpp
 CMakeFiles/Renderer.dir/src/objects/object.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Renderer.dir/src/objects/object.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Renderer.dir/src/objects/object.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/objects/object.cpp.obj -MF CMakeFiles/Renderer.dir/src/objects/object.cpp.obj.d -o CMakeFiles/Renderer.dir/src/objects/object.cpp.obj -c D:/CS/CG/MyRenderer/src/objects/object.cpp
 
 CMakeFiles/Renderer.dir/src/objects/object.cpp.i: cmake_force
@@ -223,7 +238,7 @@ CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj: CMakeFiles/Renderer.dir/f
 CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj: D:/CS/CG/MyRenderer/src/objects/transform.cpp
 CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj -MF CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj.d -o CMakeFiles/Renderer.dir/src/objects/transform.cpp.obj -c D:/CS/CG/MyRenderer/src/objects/transform.cpp
 
 CMakeFiles/Renderer.dir/src/objects/transform.cpp.i: cmake_force
@@ -238,7 +253,7 @@ CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj: CMakeFiles/Renderer.dir/flags.m
 CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj: CMakeFiles/Renderer.dir/includes_CXX.rsp
 CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj: D:/CS/CG/MyRenderer/src/scene/scene.cpp
 CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj: CMakeFiles/Renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj"
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj -MF CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj.d -o CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj -c D:/CS/CG/MyRenderer/src/scene/scene.cpp
 
 CMakeFiles/Renderer.dir/src/scene/scene.cpp.i: cmake_force
@@ -253,6 +268,7 @@ CMakeFiles/Renderer.dir/src/scene/scene.cpp.s: cmake_force
 Renderer_OBJECTS = \
 "CMakeFiles/Renderer.dir/src/graphics/bitmap.cpp.obj" \
 "CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj" \
+"CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj" \
 "CMakeFiles/Renderer.dir/src/main.cpp.obj" \
 "CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj" \
 "CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj" \
@@ -269,6 +285,7 @@ Renderer_EXTERNAL_OBJECTS =
 
 Renderer.exe: CMakeFiles/Renderer.dir/src/graphics/bitmap.cpp.obj
 Renderer.exe: CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj
+Renderer.exe: CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj
 Renderer.exe: CMakeFiles/Renderer.dir/src/main.cpp.obj
 Renderer.exe: CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj
 Renderer.exe: CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj
@@ -282,7 +299,7 @@ Renderer.exe: CMakeFiles/Renderer.dir/src/scene/scene.cpp.obj
 Renderer.exe: CMakeFiles/Renderer.dir/build.make
 Renderer.exe: CMakeFiles/Renderer.dir/linkLibs.rsp
 Renderer.exe: CMakeFiles/Renderer.dir/objects1.rsp
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable Renderer.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:/CS/CG/MyRenderer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable Renderer.exe"
 	D:/CMake/bin/cmake.exe -E rm -f CMakeFiles/Renderer.dir/objects.a
 	"D:/Program Files/Mingw/mingw64/bin/ar.exe" qc CMakeFiles/Renderer.dir/objects.a @CMakeFiles/Renderer.dir/objects1.rsp
 	"D:/Program Files/Mingw/mingw64/bin/g++.exe" -g -Wl,--whole-archive CMakeFiles/Renderer.dir/objects.a -Wl,--no-whole-archive -o Renderer.exe -Wl,--out-implib,libRenderer.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/Renderer.dir/linkLibs.rsp

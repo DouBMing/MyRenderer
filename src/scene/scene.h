@@ -9,8 +9,8 @@ class Scene
 public:
     static Scene* current;
 
-    std::vector<Model> models;
-    std::vector<Light> lights;
+    std::vector<Model*> models;
+    std::vector<Light*> lights;
     Camera* camera;
     
     Scene(const std::string& scenePath);

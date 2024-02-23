@@ -161,6 +161,7 @@ CMakeFiles/Renderer.dir/src/objects/model.cpp.obj: \
  D:/CS/CG/MyRenderer/src/math/quaternion.h \
  D:/CS/CG/MyRenderer/src/math/matrix.h \
  D:/CS/CG/MyRenderer/src/graphics/bitmap.h \
+ D:/CS/CG/MyRenderer/src/graphics/shader.h \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/iostream \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/fstream \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/codecvt.h \

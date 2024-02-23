@@ -332,7 +332,7 @@ struct Vector<4, T>
     }
     operator Vector<3, float>() const
     {
-        return Vector<3, float>(x / w, y / w, z / w);
+        return Vector<3, float>(x, y, z);
     }
 };
 
@@ -346,7 +346,12 @@ using Color = Vector<4, byte>;
 template<>
 struct Vector<4, byte>
 {
-    byte B, G, R, A;
+    union
+    {
+        byte data[4];
+        struct { byte B, G, R, A; };
+    };
+    
     Vector() : B(0), G(0), R(0), A(255) {}
     Vector(byte R, byte G, byte B) : B(B), G(G), R(R), A(255) {}
     Vector(byte R, byte G, byte B, byte A) : B(B), G(G), R(R), A(A) {}
@@ -371,16 +376,13 @@ struct Vector<4, byte>
     {
         return Color(std::rand()% 256, std::rand() % 256, std::rand() % 256);
     }
+    static Color White;
+    static Color Black;
     static Color Red;
     static Color Green;
     static Color Blue;
     static Color Yellow;
 };
-
-Color Color::Red(255, 0, 0);
-Color Color::Green(0, 255, 0);
-Color Color::Blue(0, 0, 255);
-Color Color::Yellow(255, 255, 0);
 
 // 叉乘
 template<typename T>
@@ -393,6 +395,16 @@ template<typename T>
 Vector<3, T> operator ^(const Vector<3, T>& lhs, const Vector<3, T>& rhs)
 {
     return Vector<3, T>(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
+}
+
+template<typename T>
+T Clamp(T value, T min, T max)
+{
+    if (value > max)
+        return max;
+    if (value < min)
+        return min;
+    return value;
 }
 
 Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3);

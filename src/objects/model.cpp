@@ -22,22 +22,20 @@ std::istringstream& operator >>(std::istringstream& iss, Face& f)
     return iss;
 }
 
-Model::Model(const string& modelFile, const std::string& textureFile)
+Model::Model(const string& modelFile) : shader(nullptr)
 {
     LoadOBJ(modelFile);
-    LoadTexture(textureFile);
 }
 
-Model::Model(const string& modelFile, const std::string& textureFile, Vector3 position, Vector3 rotation, Vector3 scale)
-    : Object(position, rotation, scale)
+Model::Model(const string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale)
+    : Object(position, rotation, scale), shader(nullptr)
 {
     LoadOBJ(modelFile);
-    LoadTexture(textureFile);
 }
 
 Model::Model(const Model& model) : Object(model)
 {
-    diffuseMap = model.diffuseMap == nullptr ? nullptr : new Bitmap(*model.diffuseMap);
+    shader = model.shader;
     
     verts = model.verts;
     texCoords = model.texCoords;
@@ -46,11 +44,7 @@ Model::Model(const Model& model) : Object(model)
     boundsSize = model.boundsSize;
 }
 
-Model::~Model()
-{
-    if (diffuseMap != nullptr)
-        delete diffuseMap;
-}
+Model::~Model() {}
 
 int Model::nVerts() const
 {
@@ -62,19 +56,19 @@ int Model::nFaces() const
     return faces.size();
 }
 
-Vector3 Model::vert(int index) const
+Vector3 Model::vert(int faceIdx, int i) const
 {
-    return verts[index];
+    return verts[faces[faceIdx].vi[i]];
 }
 
-Vector2 Model::texCoord(int index) const
+Vector2 Model::texCoord(int faceIdx, int i) const
 {
-    return texCoords[index];
+    return texCoords[faces[faceIdx].ti[i]];
 }
 
-Vector3 Model::normal(int index) const
+Vector3 Model::normal(int faceIdx, int i) const
 {
-    return normals[index];
+    return normals[faces[faceIdx].ni[i]];
 }
 
 Face Model::face(int index) const
@@ -151,15 +145,4 @@ void Model::LoadOBJ(const string& modelFile)
         verts[i] -= boundsCenter;   // 模型统一以边界框中心为原点
     boundsSize = maxPoint - minPoint;
     std::cerr << "BoundsSize:\t" << boundsSize << "\n";
-}
-
-void Model::LoadTexture(const string& textureFile)
-{
-    if (textureFile == "")
-    {
-        diffuseMap = nullptr;
-        return;
-    }
-    diffuseMap = new Bitmap();
-    diffuseMap->Read(textureFile);
 }

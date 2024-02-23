@@ -42,43 +42,58 @@ Scene::Scene(const std::string& scenePath)
         }
         else if (type.compare("Model") == 0)
         {
-            std::string modelName, textrueName;
-            iss >> modelName >> textrueName;
+            std::string modelName;
+            iss >> modelName;
             std::string modelPath = "Models/" + modelName + ".obj";
-            std::string textruePath = textrueName == "no_texture" ? "" : "Textures/" + textrueName + ".bmp";
+            int shaderIndex;
+            iss >> shaderIndex;
+            
+            Model* model;
             if (iss.eof())
             {
-                Model model(modelPath, textruePath);
-                models.push_back(model);
+                model = new Model(modelPath);
             }
             else
             {
                 Vector3 position, rotation, scale;
                 iss >> position >> rotation >> scale;
-                Model model(modelPath, textruePath, position, rotation, scale);
-                models.push_back(model);
+                model = new Model(modelPath, position, rotation, scale);
             }
+            
+            switch (shaderIndex)
+            {
+                case 1:
+                    model->shader = new FlatShader(model, *camera);
+                    break;
+            }
+            models.push_back(model);
         }
         else if (type.compare("Light") == 0)
         {
             Vector3 position, rotation;
+            float intensity;
+            iss >> intensity;
+            Light* light;
             if (iss.eof())
             {
-                Light light;
-                lights.push_back(light);
+                light = new Light(intensity);
             }
             else
             {
                 Vector3 position, rotation;
                 iss >> position >> rotation;
-                Light light(position, rotation);
-                lights.push_back(light);
+                light = new Light(position, rotation, intensity);
             }
+            lights.push_back(light);
         }
     }
 }
 
 Scene::~Scene()
 {
+    for (Model* m : models)
+        delete m;
+    for (Light* l : lights)
+        delete l;
     delete camera;
 }

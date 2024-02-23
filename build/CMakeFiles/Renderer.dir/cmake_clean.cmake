@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Renderer.dir/src/graphics/bitmap.cpp.obj.d"
   "CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj"
   "CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj.d"
+  "CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj"
+  "CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj.d"
   "CMakeFiles/Renderer.dir/src/main.cpp.obj"
   "CMakeFiles/Renderer.dir/src/main.cpp.obj.d"
   "CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj"
