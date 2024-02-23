@@ -87,7 +87,7 @@ Bitmap::~Bitmap()
         ::operator delete(data);
 }
 
-void Bitmap::Read(std::string filePath)
+void Bitmap::Read(const std::string& filePath)
 {
     if (colorTable)
         delete[] colorTable;
@@ -132,7 +132,7 @@ void Bitmap::Read(std::string filePath)
     in.close(); // 关闭图片
 }
 
-void Bitmap::Write(std::string filePath)
+void Bitmap::Write(const std::string& filePath)
 {
     std::ofstream out;
     // 新建图片
@@ -168,7 +168,11 @@ Color Bitmap::Get(int x, int y) // 屏幕空间的x, y
     if (!data || x < 0 || y < 0 || x >= width || y >= height)
         return Color();
 
-    return Color(data + (x + y * width) * bit / 8);
+    if (bit == 8)
+    {
+        return colorTable[data[(x + y * width) * bit / 8]];
+    }
+    return Color(data + (x + y * width) * bit / 8, bit);
 }
 
 Color Bitmap::Get(Vector2Int p)
@@ -176,23 +180,51 @@ Color Bitmap::Get(Vector2Int p)
     if (!data || p.x < 0 || p.y < 0 || p.x >= width || p.y >= height)
         return Color();
 
-    return Color(data + (p.x + p.y * width) * bit / 8);
+    if (bit == 8)
+    {
+        return colorTable[data[(p.x + p.y * width) * bit / 8]];
+    }
+    return Color(data + (p.x + p.y * width) * bit / 8, bit);
 }
 
 void Bitmap::Set(int x, int y, Color c)
 {
+    if (bit == 8)
+        return;
     if (!data || x < 0 || y < 0 || x >= width || y >= height)
         return;
-    
+
     std::memcpy(data + (x + y * width) * bit / 8, (const char*)&c, bit / 8);
+}
+
+void Bitmap::Set(int x, int y, byte grayScale)
+{
+    if (bit != 8)
+        return;
+    if (!data || x < 0 || y < 0 || x >= width || y >= height)
+        return;
+
+    data[(x + y * width) * bit / 8] = grayScale;
 }
 
 void Bitmap::Set(Vector2Int p, Color c)
 {
+    if (bit == 8)
+        return;
     if (!data || p.x < 0 || p.y < 0 || p.x >= width || p.y >= height)
         return;
     
     std::memcpy(data + (p.x + p.y * width) * bit / 8, (const char*)&c, bit / 8);
+}
+
+void Bitmap::Set(Vector2Int p, byte grayScale)
+{
+    if (bit != 8)
+        return;
+    if (!data || p.x < 0 || p.y < 0 || p.x >= width || p.y >= height)
+        return;
+
+    data[(p.x + p.y * width) * bit / 8] = grayScale;
 }
 
 void Bitmap::Clear()

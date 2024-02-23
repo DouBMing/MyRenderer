@@ -1,6 +1,7 @@
 #pragma once
 #include "model.h"
 #include "bitmap.h"
+#include "shader.h"
 
 class Camera : public Object
 {
@@ -8,9 +9,7 @@ public:
     Camera(int pixelWidth, int pixelHeight);
     Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation);
     ~Camera();
-    void AllowMSAA(bool value);
     void Render();
-    void RenderWithShader();
 private:
     int pixelWidth;
     int pixelHeight;

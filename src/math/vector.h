@@ -350,7 +350,23 @@ struct Vector<4, byte>
     Vector() : B(0), G(0), R(0), A(255) {}
     Vector(byte R, byte G, byte B) : B(B), G(G), R(R), A(255) {}
     Vector(byte R, byte G, byte B, byte A) : B(B), G(G), R(R), A(A) {}
-    Vector(byte* data) : B(data[0]), G(data[1]), R(data[2]), A(data[3]) {}
+    Vector(byte* data, int bit) : B(data[0]), G(data[1]), R(data[2]), A(data[3])
+    {
+        if (bit == 24)
+        {
+            B = data[0];
+            G = data[1];
+            R = data[2];
+            A = 255;
+        }
+        else if(bit == 32)
+        {
+            B = data[0];
+            G = data[1];
+            R = data[2];
+            A = data[3];
+        }
+    }
     static Color GetRandomColor()
     {
         return Color(std::rand()% 256, std::rand() % 256, std::rand() % 256);

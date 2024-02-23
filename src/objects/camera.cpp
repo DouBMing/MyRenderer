@@ -74,7 +74,7 @@ Matrix4x4 Camera::screenToWorldMatrix() const
 
 void Camera::Render(const Model& model)
 {
-    // 顶点变换
+    // 几何阶段
     VertexProcessing(model);
     // 采样并绘制
     Rasterization(model);
@@ -346,13 +346,13 @@ void Camera::Output()
     std::cin >> c;
     if (c == 'N')
         return;
-    Bitmap zBufferImage(pixelWidth, pixelHeight, 32);
+    Bitmap zBufferImage(pixelWidth, pixelHeight, 8);
     for (int i = 0; i < pixelHeight; i++)
     {
         for (int j = 0; j < pixelWidth; j++)
         {
             byte c = zBuffer[i][j] > 1 ? 0 : (1.0 - zBuffer[i][j]) / 2 * 255;
-            screen.Set({j, i}, Color{c, c, c});
+            screen.Set(j, i, c);
         }
     }
     screen.Write(imagePath + imageName + "_ZBuffer.bmp");
