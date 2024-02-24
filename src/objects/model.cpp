@@ -33,18 +33,11 @@ Model::Model(const string& modelFile, Vector3 position, Vector3 rotation, Vector
     LoadOBJ(modelFile);
 }
 
-Model::Model(const Model& model) : Object(model)
+Model::~Model()
 {
-    shader = model.shader;
-    
-    verts = model.verts;
-    texCoords = model.texCoords;
-    normals = model.normals;
-    faces = model.faces;
-    boundsSize = model.boundsSize;
+    if (shader != nullptr)
+        delete shader;
 }
-
-Model::~Model() {}
 
 int Model::nVerts() const
 {

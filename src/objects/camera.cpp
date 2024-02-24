@@ -21,7 +21,7 @@ Camera::Camera(int pixelWidth, int pixelHeight) : pixelWidth(pixelWidth), pixelH
     }
 }
 
-Camera::Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation) : Object(position, rotation),
+Camera::Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation) : Object(position, rotation, Vector3(1, 1, 1)),
     pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[pixelHeight];
@@ -120,6 +120,7 @@ void Camera::RasterizationStage(const Model& model)
                 if (baryCoord[0] < 0 || baryCoord[1] < 0 || baryCoord[2] < 0)
                     continue;
                 float sz = sp1.z * baryCoord[0] + sp2.z * baryCoord[1] + sp3.z * baryCoord[2];
+                // z-Test
                 if (sz < -1 || sz > 1)
                     continue;
                 if (zBuffer[sy][sx] < sz)

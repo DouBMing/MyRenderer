@@ -50,21 +50,39 @@ struct Vector
     }
     Vector<n, T>& operator +=(const Vector<n, T>& v)
     {
-        return *this = *this + v;
+        for (int i = 0; i < n; i++)
+            data[i] += v.data[i];
+        return *this;
     }
     Vector<n, T>& operator -=(const Vector<n, T>& v)
     {
-        return *this = *this - v;
+        for (int i = 0; i < n; i++)
+            data[i] -= v.data[i];
+        return *this;
     }
     Vector<n, T>& operator *=(float d)
     {
-        return *this = *this * d;
+        for (int i = 0; i < n; i++)
+            data[i] *= d;
+        return *this;
     }
     Vector<n, T>& operator /=(float d)
     {
-        return *this = *this / d;
+        for (int i = 0; i < n; i++)
+            data[i] /= d;
+        return *this;
     }
 };
+
+template<typename T>
+T Clamp(T value, T min, T max)
+{
+    if (value > max)
+        return max;
+    if (value < min)
+        return min;
+    return value;
+}
 
 // 取反
 template<int n, typename T>
@@ -72,7 +90,7 @@ Vector<n, T> operator -(const Vector<n, T>& v)
 {
     Vector<n, T> result;
     for (int i = 0; i < n; i++)
-        result.data[i] = -v.data[i];
+        result[i] = -v[i];
     return result;
 }
 
@@ -81,7 +99,7 @@ Vector<n, T> operator +(const Vector<n, T>& a, const Vector<n, T>& b)
 {
     Vector<n, T> result;
     for (int i = 0; i < n; i++)
-        result.data[i] = a.data[i] + b.data[i];
+        result[i] = a[i] + b[i];
     return result;
 }
 
@@ -90,7 +108,7 @@ Vector<n, T> operator -(const Vector<n, T>& a, const Vector<n, T>& b)
 {
     Vector<n, T> result;
     for (int i = 0; i < n; i++)
-        result.data[i] = a.data[i] - b.data[i];
+        result[i] = a[i] - b[i];
     return result;
 }
 // 点乘
@@ -99,7 +117,7 @@ T operator *(const Vector<n, T>& lhs, const Vector<n, T>& rhs)
 {
     T result = 0;
     for (int i = 0; i < n; i++)
-        result += lhs.data[i] * rhs.data[i];
+        result += lhs[i] * rhs[i];
     return result;
 }
 // 数乘
@@ -108,7 +126,7 @@ Vector<n, T> operator *(const Vector<n, T>& a, float d)
 {
     Vector<n, T> result;
     for (int i = 0; i < n; i++)
-        result.data[i] = a.data[i] * d;
+        result[i] = a[i] * d;
     return result;
 }
 
@@ -117,7 +135,7 @@ Vector<n, T> operator /(const Vector<n, T>& a, float d)
 {
     Vector<n, T> result;
     for (int i = 0; i < n; i++)
-        result.data[i] = a.data[i] / d;
+        result[i] = a[i] / d;
     return result;
 }
 
@@ -125,7 +143,7 @@ template<int n, typename T>
 std::istringstream& operator >>(std::istringstream& iss, Vector<n, T>& v)
 {
     for (int i = 0; i < n; i++)
-        iss >> v.data[i];
+        iss >> v[i];
     return iss;
 }
 
@@ -134,19 +152,15 @@ std::ostream& operator <<(std::ostream& os, const Vector<n, T>& v)
 {
     os << "(";
     for (int i = 0; i < n - 1; i++)
-        os << v.data[i] << ", ";
-    os << v.data[n - 1] << ")";
+        os << v[i] << ", ";
+    os << v[n - 1] << ")";
     return os;
 }
 
 template<typename T>
 struct Vector<2, T>
 {
-    union
-    {
-        T data[2];
-        struct { T x, y; };
-    };
+    T x, y;
 
     Vector() : x(0), y(0) {}
     Vector(T x, T y) : x(x), y(y) {}
@@ -183,30 +197,34 @@ struct Vector<2, T>
     }
     Vector<2, T>& operator +=(const Vector<2, T>& v)
     {
-        return *this = *this + v;
+        x += v.x;
+        y += v.y;
+        return *this;
     }
     Vector<2, T>& operator -=(const Vector<2, T>& v)
     {
-        return *this = *this - v;
+        x -= v.x;
+        y -= v.y;
+        return *this;
     }
     Vector<2, T>& operator *=(float d)
     {
-        return *this = *this * d;
+        x *= d;
+        y *= d;
+        return *this;
     }
     Vector<2, T>& operator /=(float d)
     {
-        return *this = *this / d;
+        x /= d;
+        y /= d;
+        return *this;
     }
 };
 
 template<typename T>
 struct Vector<3, T>
 {
-    union
-    {
-        T data[3];
-        struct { T x, y, z; };
-    };
+    T x, y, z;
 
     Vector() : x(0), y(0), z(0) {}
     Vector(T x, T y, T z) : x(x), y(y), z(z) {}
@@ -246,19 +264,31 @@ struct Vector<3, T>
     }
     Vector<3, T>& operator +=(const Vector<3, T>& v)
     {
-        return *this = *this + v;
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        return *this;
     }
     Vector<3, T>& operator -=(const Vector<3, T>& v)
     {
-        return *this = *this - v;
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
+        return *this;
     }
     Vector<3, T>& operator *=(float d)
     {
-        return *this = *this * d;
+        x *= d;
+        y *= d;
+        z *= d;
+        return *this;
     }
     Vector<3, T>& operator /=(float d)
     {
-        return *this = *this / d;
+        x /= d;
+        y /= d;
+        z /= d;
+        return *this;
     }
     template<typename U>
     operator Vector<2, U>()
@@ -270,11 +300,7 @@ struct Vector<3, T>
 template<typename T>
 struct Vector<4, T>
 {
-    union
-    {
-        T data[4];
-        struct { T x, y, z, w; };
-    };
+    T x, y, z, w;
 
     Vector() : x(0), y(0), z(0), w(0) {}
     Vector(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
@@ -316,19 +342,35 @@ struct Vector<4, T>
     }
     Vector<4, T>& operator +=(const Vector<4, T>& v)
     {
-        return *this = *this + v;
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        w += v.w;
+        return *this;
     }
     Vector<4, T>& operator -=(const Vector<4, T>& v)
     {
-        return *this = *this - v;
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
+        w -= v.w;
+        return *this;
     }
     Vector<4, T>& operator *=(float d)
     {
-        return *this = *this * d;
+        x *= d;
+        y *= d;
+        z *= d;
+        w *= d;
+        return *this;
     }
     Vector<4, T>& operator /=(float d)
     {
-        return *this = *this / d;
+        x /= d;
+        y /= d;
+        z /= d;
+        w /= d;
+        return *this;
     }
     operator Vector<3, float>() const
     {
@@ -346,11 +388,7 @@ using Color = Vector<4, byte>;
 template<>
 struct Vector<4, byte>
 {
-    union
-    {
-        byte data[4];
-        struct { byte B, G, R, A; };
-    };
+    byte B, G, R, A;
     
     Vector() : B(0), G(0), R(0), A(255) {}
     Vector(byte R, byte G, byte B) : B(B), G(G), R(R), A(255) {}
@@ -372,6 +410,36 @@ struct Vector<4, byte>
             A = data[3];
         }
     }
+    byte& operator [](int index)
+    {
+        switch (index)
+        {
+            case 0 : return B;
+            case 1 : return G;
+            case 2 : return R;
+            case 3 : return A;
+            default : throw std::out_of_range("Invalid index");
+        }
+    }
+    byte operator [](int index) const
+    {
+        switch (index)
+        {
+            case 0 : return B;
+            case 1 : return G;
+            case 2 : return R;
+            case 3 : return A;
+            default : throw std::out_of_range("Invalid index");
+        }
+    }
+    Color& operator +=(const Color& c)
+    {
+        B = Clamp(B + c.B, 0, 255);
+        G = Clamp(G + c.G, 0, 255);
+        R = Clamp(R + c.R, 0, 255);
+        A = Clamp(A + c.A, 0, 255);
+        return *this;
+    }
     static Color GetRandomColor()
     {
         return Color(std::rand()% 256, std::rand() % 256, std::rand() % 256);
@@ -384,6 +452,11 @@ struct Vector<4, byte>
     static Color Yellow;
 };
 
+Color operator +(const Color& a, const Color& b);
+Color operator *(const Color& a, const Color& b);
+Color operator *(const Color& a, float d);
+std::istringstream& operator >>(std::istringstream& iss, Color& c);
+
 // 叉乘
 template<typename T>
 float operator ^(const Vector<2, T>& lhs, const Vector<2, T>& rhs)
@@ -395,16 +468,6 @@ template<typename T>
 Vector<3, T> operator ^(const Vector<3, T>& lhs, const Vector<3, T>& rhs)
 {
     return Vector<3, T>(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
-}
-
-template<typename T>
-T Clamp(T value, T min, T max)
-{
-    if (value > max)
-        return max;
-    if (value < min)
-        return min;
-    return value;
 }
 
 Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3);

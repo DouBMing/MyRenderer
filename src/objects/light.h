@@ -7,7 +7,7 @@ public:
     float intensity;
     Color color;
     
-    Light(float intensity);
-    Light(Vector3 position, Vector3 rotation, float intensity);
+    Light(float intensity, Color c);
+    Light(float intensity, Color c, Vector3 position, Vector3 rotation);
     Vector3 direction() const;
 };

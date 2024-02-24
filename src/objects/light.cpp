@@ -1,6 +1,6 @@
 #include "light.h"
 
-Light::Light(float intensity)
+Light::Light(float intensity, Color c) : color(c)
 {
     if (intensity > 1.0)
         this->intensity = 1.0;
@@ -8,7 +8,7 @@ Light::Light(float intensity)
         this->intensity = intensity;
 }
 
-Light::Light(Vector3 position, Vector3 rotation, float intensity) : Object(position, rotation)
+Light::Light(float intensity, Color c, Vector3 position, Vector3 rotation) : Object(position, rotation, Vector3(1, 1, 1)), color(c)
 {
     if (intensity > 1.0)
         this->intensity = 1.0;

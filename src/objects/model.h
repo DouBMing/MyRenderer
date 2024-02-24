@@ -20,7 +20,6 @@ public:
 
     Model(const std::string& modelFile);
     Model(const std::string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale);
-    Model(const Model& model);
     ~Model();
     int nVerts() const;
     int nFaces() const;

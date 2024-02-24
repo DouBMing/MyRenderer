@@ -20,7 +20,8 @@ Scene::Scene(const std::string& scenePath)
     while (!in.eof())
     {
         std::getline(in, line);
-        if (line.compare(0, 2, "//") == 0) // "//"表示注释
+        // "//"表示注释
+        if (line.compare(0, 2, "//") == 0)
             continue;
         std::istringstream iss(line.c_str());
         std::string type;
@@ -42,12 +43,20 @@ Scene::Scene(const std::string& scenePath)
         }
         else if (type.compare("Model") == 0)
         {
-            std::string modelName;
+            std::string modelName, textureName;
             iss >> modelName;
             std::string modelPath = "Models/" + modelName + ".obj";
+            std::string texturePath;
             int shaderIndex;
             iss >> shaderIndex;
-            
+            switch (shaderIndex)
+            {
+                case 1:
+                    iss >> textureName;
+                    texturePath = textureName == "no_texture" ? "" : "Textures/" + textureName + ".bmp";
+                    break;
+            }
+
             Model* model;
             if (iss.eof())
             {
@@ -63,7 +72,7 @@ Scene::Scene(const std::string& scenePath)
             switch (shaderIndex)
             {
                 case 1:
-                    model->shader = new FlatShader(model, *camera);
+                    model->shader = new FlatShader(texturePath, model, *camera);
                     break;
             }
             models.push_back(model);
@@ -72,17 +81,19 @@ Scene::Scene(const std::string& scenePath)
         {
             Vector3 position, rotation;
             float intensity;
+            Color c;
             iss >> intensity;
+            iss >> c;
             Light* light;
             if (iss.eof())
             {
-                light = new Light(intensity);
+                light = new Light(intensity, c);
             }
             else
             {
                 Vector3 position, rotation;
                 iss >> position >> rotation;
-                light = new Light(position, rotation, intensity);
+                light = new Light(intensity, c, position, rotation);
             }
             lights.push_back(light);
         }

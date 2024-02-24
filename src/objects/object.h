@@ -7,7 +7,8 @@ class Object
 {
 public:
     Transform transform;
-    Object(Vector3 position = Vector3(), Vector3 rotation = Vector3(), Vector3 scale = Vector3(1, 1, 1));
+    Object();
+    Object(Vector3 position, Vector3 rotation, Vector3 scale);
     Object(const Object& obejct);
     ~Object();
 protected:
