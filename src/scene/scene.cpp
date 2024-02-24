@@ -52,6 +52,7 @@ Scene::Scene(const std::string& scenePath)
             switch (shaderIndex)
             {
                 case 1:
+                case 2:
                     iss >> textureName;
                     texturePath = textureName == "no_texture" ? "" : "Textures/" + textureName + ".bmp";
                     break;
@@ -74,6 +75,8 @@ Scene::Scene(const std::string& scenePath)
                 case 1:
                     model->shader = new FlatShader(texturePath, model, *camera);
                     break;
+                case 2:
+                    model->shader = new GouraudShader(texturePath, model, *camera);
             }
             models.push_back(model);
         }

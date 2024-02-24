@@ -14,7 +14,7 @@ IShader::~IShader() {}
 
 FlatShader::FlatShader(const std::string& texturePath, const Model* model, Camera& camera) : IShader(model, camera)
 {
-    worldCoords.reserve(model->nVerts());
+    worldCoords.resize(model->nVerts());
     if (texturePath == "")
     {
         diffuseMap = nullptr;
@@ -50,13 +50,13 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
     Color cLight;
     for (Light* light : Scene::current->lights)
     {
-        float intensity = Clamp(normal * light->direction(), 0.0f, 1.0f);
+        float intensity = std::max(0.0f, normal * light->direction()) * light->intensity;
         cLight += light->color * intensity;
     }
 
     if (diffuseMap == nullptr)
         return cLight;
-    
+
     Vector2 uv1 = model->texCoord(faceIdx, 0);
     Vector2 uv2 = model->texCoord(faceIdx, 1);
     Vector2 uv3 = model->texCoord(faceIdx, 2);
@@ -68,7 +68,7 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
 
 GouraudShader::GouraudShader(const std::string& texturePath, const Model* model, Camera& camera) : IShader(model, camera)
 {
-    vertexColors.reserve(model->nVerts());
+    vertexColors.resize(model->nVerts());
     if (texturePath == "")
     {
         diffuseMap = nullptr;
@@ -92,7 +92,8 @@ Vector4 GouraudShader::vertex(int faceIdx, int i)
     Color cLight;
     for (Light* light : Scene::current->lights)
     {
-        float intensity = Clamp(model->normal(faceIdx, i) * light->direction(), 0.0f, 1.0f);
+        Vector3 normal = M * Vector4(model->normal(faceIdx, i), 0);
+        float intensity = std::max(0.0f,  normal * light->direction()) * light->intensity;
         cLight += light->color * intensity;
     }
     vertexColors[model->face(faceIdx).vi[i]] = cLight;
@@ -109,7 +110,7 @@ Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
     
     if (diffuseMap == nullptr)
         return cLight;
-    
+
     Vector2 uv1 = model->texCoord(faceIdx, 0);
     Vector2 uv2 = model->texCoord(faceIdx, 1);
     Vector2 uv3 = model->texCoord(faceIdx, 2);
