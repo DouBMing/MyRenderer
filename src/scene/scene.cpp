@@ -53,6 +53,7 @@ Scene::Scene(const std::string& scenePath)
             {
                 case 1:
                 case 2:
+                case 3:
                     iss >> textureName;
                     texturePath = textureName == "no_texture" ? "" : "Textures/" + textureName + ".bmp";
                     break;
@@ -77,6 +78,10 @@ Scene::Scene(const std::string& scenePath)
                     break;
                 case 2:
                     model->shader = new GouraudShader(texturePath, model, *camera);
+                    break;
+                case 3:
+                    model->shader = new PhongShader(texturePath, model, *camera);
+                    break;
             }
             models.push_back(model);
         }

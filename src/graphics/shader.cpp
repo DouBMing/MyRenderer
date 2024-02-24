@@ -118,3 +118,52 @@ Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
     float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
     return cLight * diffuseMap->Get(diffuseMap->width * u, diffuseMap->height * v);
 }
+
+
+PhongShader::PhongShader(const std::string& texturePath, const Model* model, Camera& camera) : IShader(model, camera)
+{
+    if (texturePath == "")
+    {
+        diffuseMap = nullptr;
+        return;
+    }
+    diffuseMap = new Bitmap();
+    diffuseMap->Read(texturePath);
+}
+
+PhongShader::~PhongShader()
+{
+    if (diffuseMap != nullptr)
+        delete diffuseMap;
+}
+
+Vector4 PhongShader::vertex(int faceIdx, int i)
+{
+    // MVP变换
+    Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
+    return P * V * worldPos;
+}
+
+Color PhongShader::fragment(Vector3 baryCoord, int faceIdx)
+{
+    Vector3 normal = model->normal(faceIdx, 0) * baryCoord[0] + model->normal(faceIdx, 1) * baryCoord[1] +
+        model->normal(faceIdx, 2) * baryCoord[2];
+    normal = M * Vector4(normal, 0);
+
+    Color cLight;
+    for (Light* light : Scene::current->lights)
+    {
+        float intensity = std::max(0.0f, normal * light->direction()) * light->intensity;
+        cLight += light->color * intensity;
+    }
+
+    if (diffuseMap == nullptr)
+        return cLight;
+
+    Vector2 uv1 = model->texCoord(faceIdx, 0);
+    Vector2 uv2 = model->texCoord(faceIdx, 1);
+    Vector2 uv3 = model->texCoord(faceIdx, 2);
+    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
+    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
+    return cLight * diffuseMap->Get(diffuseMap->width * u, diffuseMap->height * v);
+}

@@ -48,3 +48,15 @@ public:
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
 };
+
+// 冯氏着色Shader
+class PhongShader : public IShader
+{
+private:
+    Bitmap* diffuseMap;
+public:
+    PhongShader(const std::string& texturePath, const Model* model, Camera& camera);
+    virtual ~PhongShader() override;
+    virtual Vector4 vertex(int faceIdx, int i) override;
+    virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
+};
