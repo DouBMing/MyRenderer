@@ -7,8 +7,8 @@ using std::string;
 
 static float floatMax = std::numeric_limits<float>::max();
 
-Camera::Camera(int pixelWidth, int pixelHeight) : pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32),
-    fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
+Camera::Camera(int pixelWidth, int pixelHeight, float fov) : pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32),
+    fieldOfView(fov), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[pixelHeight];
     for (int i = 0; i < pixelHeight; i++)
@@ -21,8 +21,8 @@ Camera::Camera(int pixelWidth, int pixelHeight) : pixelWidth(pixelWidth), pixelH
     }
 }
 
-Camera::Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation) : Object(position, rotation, Vector3(1, 1, 1)),
-    pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32), fieldOfView(60), nearClipPlane(0.3), farClipPlane(1000)
+Camera::Camera(int pixelWidth, int pixelHeight, float fov, Vector3 position, Vector3 rotation) : Object(position, rotation, Vector3(1, 1, 1)),
+    pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32), fieldOfView(fov), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[pixelHeight];
     for (int i = 0; i < pixelHeight; i++)
@@ -68,6 +68,7 @@ void Camera::Render(const Model& model)
     GeometryStage(model);
     // 光栅化阶段
     RasterizationStage(model);
+    //DrawWireframe(model);
 }
 
 void Camera::GeometryStage(const Model& model)
@@ -102,18 +103,14 @@ void Camera::RasterizationStage(const Model& model)
         Vector3 sp2 = screenCoordsBuffer[face.vi[1]];
         Vector3 sp3 = screenCoordsBuffer[face.vi[2]];
 
-        Vector2 minPoint, maxPoint;
-        minPoint.x = std::min(std::min(sp1.x, sp2.x), sp3.x);
-        minPoint.y = std::min(std::min(sp1.y, sp2.y), sp3.y);
-        maxPoint.x = std::max(std::max(sp1.x, sp2.x), sp3.x);
-        maxPoint.y = std::max(std::max(sp1.y, sp2.y), sp3.y);
+        Bounds bounds(sp1, sp2, sp3);
         // 剔除完全在边界外的三角形
-        if (minPoint.x > pixelWidth || minPoint.y > pixelHeight || maxPoint.x < 0 || maxPoint.y < 0)
-            return;
+        if (bounds.minPoint.x > pixelWidth || bounds.minPoint.y > pixelHeight || bounds.maxPoint.x < 0 || bounds.maxPoint.y < 0)
+            continue;
 
-        for (int sy = std::max(0.0f, minPoint.y); sy < std::min((float)pixelHeight, maxPoint.y); sy++)
+        for (int sy = std::max(0.0f, bounds.minPoint.y); sy < std::min((float)pixelHeight, bounds.maxPoint.y); sy++)
         {
-            for (int sx = std::max(0.0f, minPoint.x); sx < std::min((float)pixelWidth, maxPoint.x); sx++)
+            for (int sx = std::max(0.0f, bounds.minPoint.x); sx < std::min((float)pixelWidth, bounds.maxPoint.x); sx++)
             {
                 Vector2 p(sx, sy);
                 Vector3 baryCoord = BarycentricCoordinate(p, sp1, sp2, sp3);
@@ -213,8 +210,8 @@ void Camera::Output()
         for (int j = 0; j < pixelWidth; j++)
         {
             byte c = zBuffer[i][j] > 1 ? 0 : (1.0 - zBuffer[i][j]) / 2 * 255;
-            screen.Set(j, i, c);
+            zBufferImage.Set(j, i, c);
         }
     }
-    screen.Write(imagePath + imageName + "_ZBuffer.bmp");
+    zBufferImage.Write(imagePath + imageName + "_ZBuffer.bmp");
 }

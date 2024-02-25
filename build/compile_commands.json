@@ -7,6 +7,12 @@
 },
 {
   "directory": "D:/CS/CG/MyRenderer/build",
+  "command": "\"D:/Program Files/Mingw/mingw64/bin/g++.exe\"  @CMakeFiles/Renderer.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles/Renderer.dir/src/graphics/material.cpp.obj -c D:/CS/CG/MyRenderer/src/graphics/material.cpp",
+  "file": "D:/CS/CG/MyRenderer/src/graphics/material.cpp",
+  "output": "CMakeFiles/Renderer.dir/src/graphics/material.cpp.obj"
+},
+{
+  "directory": "D:/CS/CG/MyRenderer/build",
   "command": "\"D:/Program Files/Mingw/mingw64/bin/g++.exe\"  @CMakeFiles/Renderer.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj -c D:/CS/CG/MyRenderer/src/graphics/painter.cpp",
   "file": "D:/CS/CG/MyRenderer/src/graphics/painter.cpp",
   "output": "CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj"
@@ -22,6 +28,12 @@
   "command": "\"D:/Program Files/Mingw/mingw64/bin/g++.exe\"  @CMakeFiles/Renderer.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles/Renderer.dir/src/main.cpp.obj -c D:/CS/CG/MyRenderer/src/main.cpp",
   "file": "D:/CS/CG/MyRenderer/src/main.cpp",
   "output": "CMakeFiles/Renderer.dir/src/main.cpp.obj"
+},
+{
+  "directory": "D:/CS/CG/MyRenderer/build",
+  "command": "\"D:/Program Files/Mingw/mingw64/bin/g++.exe\"  @CMakeFiles/Renderer.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles/Renderer.dir/src/math/bounds.cpp.obj -c D:/CS/CG/MyRenderer/src/math/bounds.cpp",
+  "file": "D:/CS/CG/MyRenderer/src/math/bounds.cpp",
+  "output": "CMakeFiles/Renderer.dir/src/math/bounds.cpp.obj"
 },
 {
   "directory": "D:/CS/CG/MyRenderer/build",

@@ -29,23 +29,23 @@ Scene::Scene(const std::string& scenePath)
         if (type.compare("Camera") == 0)
         {
             int width, height;
-            iss >> width >> height;
+            float fov;
+            iss >> width >> height >> fov;
             if (iss.eof())
             {
-                camera = new Camera(width, height);
+                camera = new Camera(width, height, fov);
             }
             else
             {
                 Vector3 position, rotation;
                 iss >> position >> rotation;
-                camera = new Camera(width, height, position, rotation);
+                camera = new Camera(width, height, fov, position, rotation);
             }
         }
         else if (type.compare("Model") == 0)
         {
             std::string modelName, textureName;
             iss >> modelName;
-            std::string modelPath = "Models/" + modelName + ".obj";
             std::string texturePath;
             int shaderIndex;
             iss >> shaderIndex;
@@ -62,13 +62,13 @@ Scene::Scene(const std::string& scenePath)
             Model* model;
             if (iss.eof())
             {
-                model = new Model(modelPath);
+                model = new Model(modelName);
             }
             else
             {
                 Vector3 position, rotation, scale;
                 iss >> position >> rotation >> scale;
-                model = new Model(modelPath, position, rotation, scale);
+                model = new Model(modelName, position, rotation, scale);
             }
             
             switch (shaderIndex)
@@ -90,8 +90,7 @@ Scene::Scene(const std::string& scenePath)
             Vector3 position, rotation;
             float intensity;
             Color c;
-            iss >> intensity;
-            iss >> c;
+            iss >> intensity >> c;
             Light* light;
             if (iss.eof())
             {

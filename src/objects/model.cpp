@@ -1,12 +1,8 @@
 #include "model.h"
 #include <iostream>
 #include <fstream>
-#include <limits>
 
 using std::string;
-
-static float floatMin = std::numeric_limits<float>::min();
-static float floatMax = std::numeric_limits<float>::max();
 
 std::istringstream& operator >>(std::istringstream& iss, Face& f)
 {
@@ -22,15 +18,15 @@ std::istringstream& operator >>(std::istringstream& iss, Face& f)
     return iss;
 }
 
-Model::Model(const string& modelFile) : shader(nullptr)
+Model::Model(const string& modelName) : shader(nullptr)
 {
-    LoadOBJ(modelFile);
+    LoadOBJ(modelName);
 }
 
-Model::Model(const string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale)
+Model::Model(const string& modelName, Vector3 position, Vector3 rotation, Vector3 scale)
     : Object(position, rotation, scale), shader(nullptr)
 {
-    LoadOBJ(modelFile);
+    LoadOBJ(modelName);
 }
 
 Model::~Model()
@@ -69,30 +65,56 @@ Face Model::face(int index) const
     return faces[index];
 }
 
-Vector3 Model::GetBoundsSize() const
-{
-    return boundsSize;
-}
-
 Vector3 Model::operator [](int index) const
 {
     return verts[index];
 }
 
-void Model::LoadOBJ(const string& modelFile)
+Color Model::SampleKa(int faceIdx, float u, float v) const
 {
+    if (HasMaterial())
+        return materials[materialIndices[faceIdx]]->SampleKa(u, v);
+    return Color::White;
+}
+
+Color Model::SampleKd(int faceIdx, float u, float v) const
+{
+    if (HasMaterial())
+        return materials[materialIndices[faceIdx]]->SampleKd(u, v);
+    return Color::White;
+}
+
+Color Model::SampleKs(int faceIdx, float u, float v) const
+{
+    if (HasMaterial())
+        return materials[materialIndices[faceIdx]]->SampleKs(u, v);
+    return Color::White;
+}
+
+bool Model::HasMaterial() const
+{
+    return materials.size() > 0;
+}
+
+Material Model::GetMaterial(int index) const
+{
+    return *materials[index];
+}
+
+void Model::LoadOBJ(const string& modelName)
+{
+    string modelPath  = "Models/" + modelName + ".obj";
+
     std::ifstream in;
-    in.open(modelFile, std::ifstream::in);
+    in.open(modelPath, std::ifstream::in);
     if (in.fail())
     {
-        std::cerr << "Can't open " + modelFile + ".obj" << "\n";
+        std::cerr << "Can't open " + modelName + ".obj" << "\n";
         return;
     }
     
-    Vector3 minPoint = Vector3(floatMax, floatMax, floatMax);
-    Vector3 maxPoint = Vector3(floatMin, floatMin, floatMin);
-
     string line;
+    int mtlIndex = 0;
     while (!in.eof())
     {
         std::getline(in, line);
@@ -100,18 +122,22 @@ void Model::LoadOBJ(const string& modelFile)
         
         string prefix;
         iss >> prefix;
-        if (prefix == "v")
+        if (prefix == "mtllib")
+        {
+            LoadMTL(modelName);
+        }
+        else if (prefix == "v")
         {
             Vector3 v;
             iss >> v;
             verts.push_back(v);
 
-            minPoint.x = std::min(minPoint.x, v.x);
-            minPoint.y = std::min(minPoint.y, v.y);
-            minPoint.z = std::min(minPoint.z, v.z);
-            maxPoint.x = std::max(maxPoint.x, v.x);
-            maxPoint.y = std::max(maxPoint.y, v.y);
-            maxPoint.z = std::max(maxPoint.z, v.z);
+            bounds.minPoint.x = std::min(bounds.minPoint.x, v.x);
+            bounds.minPoint.y = std::min(bounds.minPoint.y, v.y);
+            bounds.minPoint.z = std::min(bounds.minPoint.z, v.z);
+            bounds.maxPoint.x = std::max(bounds.maxPoint.x, v.x);
+            bounds.maxPoint.y = std::max(bounds.maxPoint.y, v.y);
+            bounds.maxPoint.z = std::max(bounds.maxPoint.z, v.z);
         }
         else if (prefix == "vt")
         {
@@ -130,12 +156,97 @@ void Model::LoadOBJ(const string& modelFile)
             Face f;
             iss >> f;
             faces.push_back(f);
+            materialIndices.push_back(mtlIndex);
+        }
+        else if (prefix == "usemtl")
+        {
+            string name;
+            iss >> name;
+            for (int i = 0; i < materials.size(); i++)
+            {
+                if (materials[i]->name == name)
+                {
+                    mtlIndex = i;
+                    break;
+                }
+            }
         }
     }
-    Vector3 boundsCenter = (minPoint + maxPoint) / 2;
-    std::cerr << "BoundsCenter:\t" << boundsCenter << "\n";
+    Vector3 boundsCenter = bounds.center();
+    bounds.minPoint -= bounds.center();
+    bounds.maxPoint -= bounds.center();
     for (int i = 0; i < verts.size(); i++)
         verts[i] -= boundsCenter;   // 模型统一以边界框中心为原点
-    boundsSize = maxPoint - minPoint;
-    std::cerr << "BoundsSize:\t" << boundsSize << "\n";
+}
+
+void Model::LoadMTL(const string& materialName)
+{
+    string materialPath  = "Models/" + materialName + ".mtl";
+
+    std::ifstream in;
+    in.open(materialPath, std::ifstream::in);
+    if (in.fail())
+    {
+        std::cerr << "Can't open " + materialName + ".mtl" << "\n";
+        return;
+    }
+    
+    string line;
+    Material* current = nullptr;
+    while (!in.eof())
+    {
+        std::getline(in, line);
+        std::istringstream iss(line.c_str());
+        
+        string prefix;
+        iss >> prefix;
+        if (prefix == "newmtl")
+        {
+            string name;
+            iss >> name;
+            current = new Material(name);
+            materials.push_back(current);
+        }
+        else if (prefix == "Ka")
+        {
+            iss >> current->Ka;
+        }
+        else if (prefix == "Kd")
+        {
+            iss >> current->Kd;
+        }
+        else if (prefix == "Ks")
+        {
+            iss >> current->Ks;
+        }
+        else if (prefix == "Ns")
+        {
+            iss >> current->Ns;
+        }
+        else if (prefix == "d")
+        {
+            iss >> current->d;
+        }
+        else if (prefix == "map_Ka")
+        {
+            string path;
+            iss >> path;
+            current->ambientMap = new Bitmap();
+            current->ambientMap->Read(path);
+        }
+        else if (prefix == "map_Kd")
+        {
+            string path;
+            iss >> path;
+            current->diffuseMap = new Bitmap();
+            current->diffuseMap->Read(path);
+        }
+        else if (prefix == "map_Ks")
+        {
+            string path;
+            iss >> path;
+            current->specularMap = new Bitmap();
+            current->specularMap->Read(path);
+        }
+    }
 }

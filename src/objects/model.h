@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include "object.h"
-#include "bitmap.h"
+#include "material.h"
+#include "bounds.h"
 #include "shader.h"
 
 struct Face
@@ -18,8 +19,8 @@ class Model : public Object
 public:
     IShader* shader;
 
-    Model(const std::string& modelFile);
-    Model(const std::string& modelFile, Vector3 position, Vector3 rotation, Vector3 scale);
+    Model(const std::string& modelName);
+    Model(const std::string& modelName, Vector3 position, Vector3 rotation, Vector3 scale);
     ~Model();
     int nVerts() const;
     int nFaces() const;
@@ -27,13 +28,20 @@ public:
     Vector2 texCoord(int faceIdx, int i) const;
     Vector3 normal(int faceIdx, int i) const;
     Face face(int index) const;
-    Vector3 GetBoundsSize() const;
-    Vector3 operator [](int index) const;  // 通过索引器获取顶点
+    Vector3 operator [](int index) const;   // 通过索引器获取顶点
+    Color SampleKa(int faceIdx, float u, float v) const;
+    Color SampleKd(int faceIdx, float u, float v) const;
+    Color SampleKs(int faceIdx, float u, float v) const;
+    bool HasMaterial() const;
+    Material GetMaterial(int index) const;
 private:
-    std::vector<Vector3> verts;      // 顶点坐标
-    std::vector<Vector2> texCoords;  // 材质坐标
-    std::vector<Vector3> normals;    // 法线坐标
-    std::vector<Face> faces;
-    Vector3 boundsSize;              // 边界框大小
-    void LoadOBJ(const std::string& modelFile);
+    std::vector<Vector3> verts;             // 顶点坐标
+    std::vector<Vector2> texCoords;         // 材质坐标
+    std::vector<Vector3> normals;           // 法线坐标
+    std::vector<Face> faces;                // 三角面信息
+    std::vector<Material*> materials;       // 材质信息
+    std::vector<int> materialIndices;       // 面对应的材质序号
+    Bounds bounds;                          // 边界框
+    void LoadOBJ(const std::string& modelName);
+    void LoadMTL(const std::string& materialName);
 };

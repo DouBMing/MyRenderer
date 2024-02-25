@@ -161,7 +161,9 @@ CMakeFiles/Renderer.dir/src/objects/camera.cpp.obj: \
  D:/Program\ Files/Mingw/mingw64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/bits/sstream.tcc \
  D:/CS/CG/MyRenderer/src/math/quaternion.h \
  D:/CS/CG/MyRenderer/src/math/matrix.h \
+ D:/CS/CG/MyRenderer/src/graphics/material.h \
  D:/CS/CG/MyRenderer/src/graphics/bitmap.h \
+ D:/CS/CG/MyRenderer/src/math/bounds.h \
  D:/CS/CG/MyRenderer/src/graphics/shader.h \
  D:/CS/CG/MyRenderer/src/scene/scene.h \
  D:/CS/CG/MyRenderer/src/objects/light.h \

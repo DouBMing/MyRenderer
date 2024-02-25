@@ -37,15 +37,15 @@ Color operator *(const Color& a, float d)
     return c;
 }
 
-std::istringstream& operator >>(std::istringstream& iss, Color& c)
+std::istream& operator >>(std::istream& is, Color& c)
 {
     int r, g, b;
-    iss >> r >> g >> b;
+    is >> r >> g >> b;
     c.R = Clamp(r, 0, 255);
     c.G = Clamp(g, 0, 255);
     c.B = Clamp(b, 0, 255);
     c.A = 255;
-    return iss;
+    return is;
 }
 
 Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3)

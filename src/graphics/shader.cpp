@@ -54,6 +54,16 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
         cLight += light->color * intensity;
     }
 
+    if (model->HasMaterial())
+    {
+        Vector2 uv1 = model->texCoord(faceIdx, 0);
+        Vector2 uv2 = model->texCoord(faceIdx, 1);
+        Vector2 uv3 = model->texCoord(faceIdx, 2);
+        float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
+        float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
+        return cLight * model->SampleKd(faceIdx, u, v);
+    }
+
     if (diffuseMap == nullptr)
         return cLight;
 
@@ -108,6 +118,16 @@ Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
     Color cLight = vertexColors[face.vi[0]] * baryCoord[0] + vertexColors[face.vi[1]] * baryCoord[1] +
         vertexColors[face.vi[2]] * baryCoord[2];
     
+    if (model->HasMaterial())
+    {
+        Vector2 uv1 = model->texCoord(faceIdx, 0);
+        Vector2 uv2 = model->texCoord(faceIdx, 1);
+        Vector2 uv3 = model->texCoord(faceIdx, 2);
+        float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
+        float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
+        return cLight * model->SampleKd(faceIdx, u, v);
+    }
+
     if (diffuseMap == nullptr)
         return cLight;
 
@@ -155,6 +175,16 @@ Color PhongShader::fragment(Vector3 baryCoord, int faceIdx)
     {
         float intensity = std::max(0.0f, normal * light->direction()) * light->intensity;
         cLight += light->color * intensity;
+    }
+
+    if (model->HasMaterial())
+    {
+        Vector2 uv1 = model->texCoord(faceIdx, 0);
+        Vector2 uv2 = model->texCoord(faceIdx, 1);
+        Vector2 uv3 = model->texCoord(faceIdx, 2);
+        float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
+        float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
+        return cLight * model->SampleKd(faceIdx, u, v);
     }
 
     if (diffuseMap == nullptr)

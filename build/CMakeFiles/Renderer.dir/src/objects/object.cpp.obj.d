@@ -162,6 +162,8 @@ CMakeFiles/Renderer.dir/src/objects/object.cpp.obj: \
  D:/CS/CG/MyRenderer/src/scene/scene.h \
  D:/CS/CG/MyRenderer/src/objects/camera.h \
  D:/CS/CG/MyRenderer/src/objects/model.h \
+ D:/CS/CG/MyRenderer/src/graphics/material.h \
  D:/CS/CG/MyRenderer/src/graphics/bitmap.h \
+ D:/CS/CG/MyRenderer/src/math/bounds.h \
  D:/CS/CG/MyRenderer/src/graphics/shader.h \
  D:/CS/CG/MyRenderer/src/objects/light.h

@@ -140,11 +140,11 @@ Vector<n, T> operator /(const Vector<n, T>& a, float d)
 }
 
 template<int n, typename T>
-std::istringstream& operator >>(std::istringstream& iss, Vector<n, T>& v)
+std::istream& operator >>(std::istream& is, Vector<n, T>& v)
 {
     for (int i = 0; i < n; i++)
-        iss >> v[i];
-    return iss;
+        is >> v[i];
+    return is;
 }
 
 template<int n, typename T>
@@ -393,6 +393,12 @@ struct Vector<4, byte>
     Vector() : B(0), G(0), R(0), A(255) {}
     Vector(byte R, byte G, byte B) : B(B), G(G), R(R), A(255) {}
     Vector(byte R, byte G, byte B, byte A) : B(B), G(G), R(R), A(A) {}
+    Vector(Vector3 c) : A(255)
+    {
+        R = Clamp(c.x * 255, 0.0f, 255.0f);
+        G = Clamp(c.y * 255, 0.0f, 255.0f);
+        B = Clamp(c.z * 255, 0.0f, 255.0f);
+    }
     Vector(byte* data, int bit) : B(data[0]), G(data[1]), R(data[2]), A(data[3])
     {
         if (bit == 24)
@@ -455,7 +461,7 @@ struct Vector<4, byte>
 Color operator +(const Color& a, const Color& b);
 Color operator *(const Color& a, const Color& b);
 Color operator *(const Color& a, float d);
-std::istringstream& operator >>(std::istringstream& iss, Color& c);
+std::istream& operator >>(std::istream& is, Color& c);
 
 // 叉乘
 template<typename T>

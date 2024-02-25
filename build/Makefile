@@ -153,6 +153,30 @@ src/graphics/bitmap.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/bitmap.cpp.s
 .PHONY : src/graphics/bitmap.cpp.s
 
+src/graphics/material.obj: src/graphics/material.cpp.obj
+.PHONY : src/graphics/material.obj
+
+# target to build an object file
+src/graphics/material.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/material.cpp.obj
+.PHONY : src/graphics/material.cpp.obj
+
+src/graphics/material.i: src/graphics/material.cpp.i
+.PHONY : src/graphics/material.i
+
+# target to preprocess a source file
+src/graphics/material.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/material.cpp.i
+.PHONY : src/graphics/material.cpp.i
+
+src/graphics/material.s: src/graphics/material.cpp.s
+.PHONY : src/graphics/material.s
+
+# target to generate assembly for a file
+src/graphics/material.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/graphics/material.cpp.s
+.PHONY : src/graphics/material.cpp.s
+
 src/graphics/painter.obj: src/graphics/painter.cpp.obj
 .PHONY : src/graphics/painter.obj
 
@@ -224,6 +248,30 @@ src/main.s: src/main.cpp.s
 src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
+
+src/math/bounds.obj: src/math/bounds.cpp.obj
+.PHONY : src/math/bounds.obj
+
+# target to build an object file
+src/math/bounds.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/math/bounds.cpp.obj
+.PHONY : src/math/bounds.cpp.obj
+
+src/math/bounds.i: src/math/bounds.cpp.i
+.PHONY : src/math/bounds.i
+
+# target to preprocess a source file
+src/math/bounds.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/math/bounds.cpp.i
+.PHONY : src/math/bounds.cpp.i
+
+src/math/bounds.s: src/math/bounds.cpp.s
+.PHONY : src/math/bounds.s
+
+# target to generate assembly for a file
+src/math/bounds.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Renderer.dir/build.make CMakeFiles/Renderer.dir/src/math/bounds.cpp.s
+.PHONY : src/math/bounds.cpp.s
 
 src/math/matrix.obj: src/math/matrix.cpp.obj
 .PHONY : src/math/matrix.obj
@@ -453,6 +501,9 @@ help:
 	@echo "... src/graphics/bitmap.obj"
 	@echo "... src/graphics/bitmap.i"
 	@echo "... src/graphics/bitmap.s"
+	@echo "... src/graphics/material.obj"
+	@echo "... src/graphics/material.i"
+	@echo "... src/graphics/material.s"
 	@echo "... src/graphics/painter.obj"
 	@echo "... src/graphics/painter.i"
 	@echo "... src/graphics/painter.s"
@@ -462,6 +513,9 @@ help:
 	@echo "... src/main.obj"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/math/bounds.obj"
+	@echo "... src/math/bounds.i"
+	@echo "... src/math/bounds.s"
 	@echo "... src/math/matrix.obj"
 	@echo "... src/math/matrix.i"
 	@echo "... src/math/matrix.s"

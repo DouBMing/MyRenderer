@@ -5,8 +5,8 @@
 class Camera : public Object
 {
 public:
-    Camera(int pixelWidth, int pixelHeight);
-    Camera(int pixelWidth, int pixelHeight, Vector3 position, Vector3 rotation);
+    Camera(int pixelWidth, int pixelHeight, float fov);
+    Camera(int pixelWidth, int pixelHeight, float fov, Vector3 position, Vector3 rotation);
     ~Camera();
     Matrix4x4 worldToViewMatrix() const;    // 世界空间到观察空间的矩阵
     Matrix4x4 projectionMatrix() const;     // 投影矩阵

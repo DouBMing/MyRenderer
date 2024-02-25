@@ -9,9 +9,11 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "D:/CS/CG/MyRenderer/src/graphics/bitmap.cpp" "CMakeFiles/Renderer.dir/src/graphics/bitmap.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/graphics/bitmap.cpp.obj.d"
+  "D:/CS/CG/MyRenderer/src/graphics/material.cpp" "CMakeFiles/Renderer.dir/src/graphics/material.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/graphics/material.cpp.obj.d"
   "D:/CS/CG/MyRenderer/src/graphics/painter.cpp" "CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/graphics/painter.cpp.obj.d"
   "D:/CS/CG/MyRenderer/src/graphics/shader.cpp" "CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/graphics/shader.cpp.obj.d"
   "D:/CS/CG/MyRenderer/src/main.cpp" "CMakeFiles/Renderer.dir/src/main.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/main.cpp.obj.d"
+  "D:/CS/CG/MyRenderer/src/math/bounds.cpp" "CMakeFiles/Renderer.dir/src/math/bounds.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/math/bounds.cpp.obj.d"
   "D:/CS/CG/MyRenderer/src/math/matrix.cpp" "CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/math/matrix.cpp.obj.d"
   "D:/CS/CG/MyRenderer/src/math/quaternion.cpp" "CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/math/quaternion.cpp.obj.d"
   "D:/CS/CG/MyRenderer/src/math/vector.cpp" "CMakeFiles/Renderer.dir/src/math/vector.cpp.obj" "gcc" "CMakeFiles/Renderer.dir/src/math/vector.cpp.obj.d"
