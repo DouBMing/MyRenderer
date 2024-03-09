@@ -29,11 +29,7 @@ public:
     Vector3 normal(int faceIdx, int i) const;
     Face face(int index) const;
     Vector3 operator [](int index) const;   // 通过索引器获取顶点
-    Color SampleKa(int faceIdx, float u, float v) const;
-    Color SampleKd(int faceIdx, float u, float v) const;
-    Color SampleKs(int faceIdx, float u, float v) const;
-    bool HasMaterial() const;
-    Material GetMaterial(int index) const;
+    Material* GetMaterial(int faceIdx) const;
 private:
     std::vector<Vector3> verts;             // 顶点坐标
     std::vector<Vector2> texCoords;         // 材质坐标

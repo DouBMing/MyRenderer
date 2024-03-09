@@ -1,14 +1,48 @@
-Camera  1600 900  20  4.5 0 -2.5  -2 -60 0
+Camera:
+    ScreenSize: 1600 900
+    FOV:        20
+    Position:   4.5 0 -2.5
+    Rotation:   -2 -60 0
+End
 
-//Light  1.0  255 255 255  0 3 0  50 -30 0
-Light  1.0  255 255 255  0 3 0  0 -66 0
-//Light  0.8  255 0 0  3 3 -3  0 -90 0
+Light:
+    Intensity:  1.0
+    Color:      255 255 255
+    Position:   0 3 0
+    Rotation:   0 -66 0
+End
 
-// 0 = no shader    1 = flat shader     2 = gouraud shader      3 = phong shader
+Model:
+    ObjName:    african_head
+    Shader:     NoShader
+    Position:   2.5 0 -1.4
+    Rotation:   0 117 0
+    Scale:      1 1 1
+//End
 
-//Model  african_head  2  african_head_diffuse  2.5 0 -1.4  0 117 0  1 1 1
-//Model  moon  3  no_texture
-//Model  diablo3_pose  2  diablo3_pose_diffuse  2.3 0 -2.4  0 107 0  1 1 1
-//Model  diablo3_pose  3  diablo3_pose_diffuse  3.2 0 -0.5  0 150 0  1 1 1
-Model  koishi  3  no_texture  4  -0.5  -2.2  0 120 0  1 1 1
-//Model  koishi  3  no_texture  3.3  0.1  -1.7  0 120 0  1 1 1
+Model:
+    ObjName:    koishi
+    Shader:     PhongShader
+    Position:   4 -0.5 -2.2
+    Rotation:   0 120 0
+    Scale:      1 1 1
+End
+
+Model:
+    ObjName:    moon
+    Shader:     FlatShader
+//End
+
+Model:
+    ObjName:    diablo3_pose
+    Shader:     GouraudShader
+    Position:   2.3 0 -2.4
+    Rotation:   0 107 0
+//End
+
+Model:
+    ObjName:    diablo3_pose
+    Shader:     PhongShader
+    Position:   3.2 0 -0.5
+    Rotation:   0 150 0
+//End

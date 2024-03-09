@@ -7,7 +7,7 @@ using std::string;
 
 static float floatMax = std::numeric_limits<float>::max();
 
-Camera::Camera(int pixelWidth, int pixelHeight, float fov) : pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32),
+Camera::Camera(int pixelWidth, int pixelHeight, float fov) : pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 24),
     fieldOfView(fov), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[pixelHeight];
@@ -22,7 +22,7 @@ Camera::Camera(int pixelWidth, int pixelHeight, float fov) : pixelWidth(pixelWid
 }
 
 Camera::Camera(int pixelWidth, int pixelHeight, float fov, Vector3 position, Vector3 rotation) : Object(position, rotation, Vector3(1, 1, 1)),
-    pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 32), fieldOfView(fov), nearClipPlane(0.3), farClipPlane(1000)
+    pixelWidth(pixelWidth), pixelHeight(pixelHeight), screen(pixelWidth, pixelHeight, 24), fieldOfView(fov), nearClipPlane(0.3), farClipPlane(1000)
 {
     zBuffer = new float*[pixelHeight];
     for (int i = 0; i < pixelHeight; i++)

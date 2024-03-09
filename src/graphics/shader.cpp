@@ -12,23 +12,13 @@ IShader::IShader(const Model* model, Camera& camera) : model(model)
 
 IShader::~IShader() {}
 
-FlatShader::FlatShader(const std::string& texturePath, const Model* model, Camera& camera) : IShader(model, camera)
+
+FlatShader::FlatShader(const Model* model, Camera& camera) : IShader(model, camera)
 {
     worldCoords.resize(model->nVerts());
-    if (texturePath == "")
-    {
-        diffuseMap = nullptr;
-        return;
-    }
-    diffuseMap = new Bitmap();
-    diffuseMap->Read(texturePath);
 }
 
-FlatShader::~FlatShader()
-{
-    if (diffuseMap != nullptr)
-        delete diffuseMap;
-}
+FlatShader::~FlatShader() {}
 
 Vector4 FlatShader::vertex(int faceIdx, int i)
 {
@@ -42,6 +32,7 @@ Vector4 FlatShader::vertex(int faceIdx, int i)
 Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
 {
     std::vector<Light*>& lights = Scene::current->lights;
+    Material* material = model->GetMaterial(faceIdx);
     Face face = model->face(faceIdx);
     Vector3 sa = Vector3(worldCoords[face.vi[1]] - worldCoords[face.vi[0]]);
     Vector3 sb = Vector3(worldCoords[face.vi[2]] - worldCoords[face.vi[0]]);
@@ -54,17 +45,7 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
         cLight += light->color * intensity;
     }
 
-    if (model->HasMaterial())
-    {
-        Vector2 uv1 = model->texCoord(faceIdx, 0);
-        Vector2 uv2 = model->texCoord(faceIdx, 1);
-        Vector2 uv3 = model->texCoord(faceIdx, 2);
-        float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-        float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-        return cLight * model->SampleKd(faceIdx, u, v);
-    }
-
-    if (diffuseMap == nullptr)
+    if (material == nullptr)
         return cLight;
 
     Vector2 uv1 = model->texCoord(faceIdx, 0);
@@ -72,27 +53,16 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
     Vector2 uv3 = model->texCoord(faceIdx, 2);
     float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
     float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    return cLight * diffuseMap->Get(diffuseMap->width * u, diffuseMap->height * v);
+    return cLight * material->SampleKd(u, v);
 }
 
 
-GouraudShader::GouraudShader(const std::string& texturePath, const Model* model, Camera& camera) : IShader(model, camera)
+GouraudShader::GouraudShader(const Model* model, Camera& camera) : IShader(model, camera)
 {
     vertexColors.resize(model->nVerts());
-    if (texturePath == "")
-    {
-        diffuseMap = nullptr;
-        return;
-    }
-    diffuseMap = new Bitmap();
-    diffuseMap->Read(texturePath);
 }
 
-GouraudShader::~GouraudShader()
-{
-    if (diffuseMap != nullptr)
-        delete diffuseMap;
-}
+GouraudShader::~GouraudShader() {}
 
 Vector4 GouraudShader::vertex(int faceIdx, int i)
 {
@@ -113,22 +83,13 @@ Vector4 GouraudShader::vertex(int faceIdx, int i)
 
 Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
 {
+    Material* material = model->GetMaterial(faceIdx);
     Face face = model->face(faceIdx);
 
     Color cLight = vertexColors[face.vi[0]] * baryCoord[0] + vertexColors[face.vi[1]] * baryCoord[1] +
         vertexColors[face.vi[2]] * baryCoord[2];
-    
-    if (model->HasMaterial())
-    {
-        Vector2 uv1 = model->texCoord(faceIdx, 0);
-        Vector2 uv2 = model->texCoord(faceIdx, 1);
-        Vector2 uv3 = model->texCoord(faceIdx, 2);
-        float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-        float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-        return cLight * model->SampleKd(faceIdx, u, v);
-    }
 
-    if (diffuseMap == nullptr)
+    if (material == nullptr)
         return cLight;
 
     Vector2 uv1 = model->texCoord(faceIdx, 0);
@@ -136,26 +97,13 @@ Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
     Vector2 uv3 = model->texCoord(faceIdx, 2);
     float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
     float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    return cLight * diffuseMap->Get(diffuseMap->width * u, diffuseMap->height * v);
+    return cLight * material->SampleKd(u, v);
 }
 
 
-PhongShader::PhongShader(const std::string& texturePath, const Model* model, Camera& camera) : IShader(model, camera)
-{
-    if (texturePath == "")
-    {
-        diffuseMap = nullptr;
-        return;
-    }
-    diffuseMap = new Bitmap();
-    diffuseMap->Read(texturePath);
-}
+PhongShader::PhongShader(const Model* model, Camera& camera) : IShader(model, camera) {}
 
-PhongShader::~PhongShader()
-{
-    if (diffuseMap != nullptr)
-        delete diffuseMap;
-}
+PhongShader::~PhongShader() {}
 
 Vector4 PhongShader::vertex(int faceIdx, int i)
 {
@@ -166,6 +114,8 @@ Vector4 PhongShader::vertex(int faceIdx, int i)
 
 Color PhongShader::fragment(Vector3 baryCoord, int faceIdx)
 {
+    Material* material = model->GetMaterial(faceIdx);
+
     Vector3 normal = model->normal(faceIdx, 0) * baryCoord[0] + model->normal(faceIdx, 1) * baryCoord[1] +
         model->normal(faceIdx, 2) * baryCoord[2];
     normal = M * Vector4(normal, 0);
@@ -177,17 +127,7 @@ Color PhongShader::fragment(Vector3 baryCoord, int faceIdx)
         cLight += light->color * intensity;
     }
 
-    if (model->HasMaterial())
-    {
-        Vector2 uv1 = model->texCoord(faceIdx, 0);
-        Vector2 uv2 = model->texCoord(faceIdx, 1);
-        Vector2 uv3 = model->texCoord(faceIdx, 2);
-        float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-        float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-        return cLight * model->SampleKd(faceIdx, u, v);
-    }
-
-    if (diffuseMap == nullptr)
+    if (material == nullptr)
         return cLight;
 
     Vector2 uv1 = model->texCoord(faceIdx, 0);
@@ -195,5 +135,5 @@ Color PhongShader::fragment(Vector3 baryCoord, int faceIdx)
     Vector2 uv3 = model->texCoord(faceIdx, 2);
     float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
     float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    return cLight * diffuseMap->Get(diffuseMap->width * u, diffuseMap->height * v);
+    return cLight * material->SampleKd(u, v);
 }

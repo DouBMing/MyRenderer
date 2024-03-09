@@ -28,9 +28,8 @@ class FlatShader : public IShader
 {
 private:
     std::vector<Vector4> worldCoords;
-    Bitmap* diffuseMap;
 public:
-    FlatShader(const std::string& texturePath, const Model* model, Camera& camera);
+    FlatShader(const Model* model, Camera& camera);
     virtual ~FlatShader() override;
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
@@ -41,9 +40,8 @@ class GouraudShader : public IShader
 {
 private:
     std::vector<Color> vertexColors;
-    Bitmap* diffuseMap;
 public:
-    GouraudShader(const std::string& texturePath, const Model* model, Camera& camera);
+    GouraudShader(const Model* model, Camera& camera);
     virtual ~GouraudShader() override;
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
@@ -53,9 +51,9 @@ public:
 class PhongShader : public IShader
 {
 private:
-    Bitmap* diffuseMap;
+
 public:
-    PhongShader(const std::string& texturePath, const Model* model, Camera& camera);
+    PhongShader(const Model* model, Camera& camera);
     virtual ~PhongShader() override;
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;

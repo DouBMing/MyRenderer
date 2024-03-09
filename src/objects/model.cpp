@@ -70,35 +70,11 @@ Vector3 Model::operator [](int index) const
     return verts[index];
 }
 
-Color Model::SampleKa(int faceIdx, float u, float v) const
+Material* Model::GetMaterial(int faceIdx) const
 {
-    if (HasMaterial())
-        return materials[materialIndices[faceIdx]]->SampleKa(u, v);
-    return Color::White;
-}
-
-Color Model::SampleKd(int faceIdx, float u, float v) const
-{
-    if (HasMaterial())
-        return materials[materialIndices[faceIdx]]->SampleKd(u, v);
-    return Color::White;
-}
-
-Color Model::SampleKs(int faceIdx, float u, float v) const
-{
-    if (HasMaterial())
-        return materials[materialIndices[faceIdx]]->SampleKs(u, v);
-    return Color::White;
-}
-
-bool Model::HasMaterial() const
-{
-    return materials.size() > 0;
-}
-
-Material Model::GetMaterial(int index) const
-{
-    return *materials[index];
+    if (materials.size() == 0)
+        return nullptr;
+    return materials[materialIndices[faceIdx]];
 }
 
 void Model::LoadOBJ(const string& modelName)
