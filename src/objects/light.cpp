@@ -9,3 +9,20 @@ Vector3 Light::direction() const
 {
     return -transform.forward();
 }
+
+Color Light::GetColor() const
+{
+    return color * intensity;
+}
+
+Color Light::ambient(54, 58, 66);
+
+Color Light::GetAmbient()
+{
+    return ambient;
+}
+
+void Light::SetAmbient(Color c)
+{
+    ambient = c;
+}

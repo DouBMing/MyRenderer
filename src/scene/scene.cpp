@@ -7,7 +7,8 @@ enum ShaderType
     None,
     SFlat,
     SGouraud,
-    SPhong
+    SPhong,
+    SHalfLambert
 };
 
 enum ObjectType
@@ -50,31 +51,59 @@ Scene::Scene(const std::string& scenePath)
         std::string prefix;
         iss >> prefix;
         
+        // 判断物体类型并设置全局变量
         if (prefix == "Camera:")
+        {
             TObject = TCamera;
-        else if (prefix == "Light:")
+            continue;
+        }
+        if (prefix == "Light:")
+        {
             TObject = TLight;
-        else if (prefix == "Model:")
+            continue;
+        }
+        if (prefix == "Model:")
+        {
             TObject = TModel;
+            continue;
+        }
+        if (prefix == "AmbientColor:")
+        {
+            Color c;
+            iss >> c;
+            Light::SetAmbient(c);
+            continue;
+        }
 
         switch (TObject)
         {
             case TCamera:
                 if(prefix == "ScreenSize:")
+                {
                     iss >> screenSize;
+                    continue;
+                }
                 else if(prefix == "FOV:")
+                {
                     iss >> fov;
-                break;
+                    continue;
+                }
             case TLight:
                 if(prefix == "Intensity:")
+                {
                     iss >> intensity;
+                    continue;
+                }
                 else if(prefix == "Color:")
+                {
                     iss >> cLight;
-                break;
+                    continue;
+                }
             case TModel:
                 if(prefix == "ObjName:")
                 {
                     iss >> modelName;
+                    continue;
                 }
                 else if(prefix == "Shader:")
                 {
@@ -88,23 +117,28 @@ Scene::Scene(const std::string& scenePath)
                         TShader = SGouraud;
                     else if (shaderName == "PhongShader")
                         TShader = SPhong;
+                    else if (shaderName == "HalfLambertShader")
+                        TShader = SHalfLambert;
+                    continue;
                 }
-                break;
         }
 
         if(prefix == "Position:")
         {
             iss >> position;
+            continue;
         }
-        else if(prefix == "Rotation:")
+        if(prefix == "Rotation:")
         {
             iss >> rotation;
+            continue;
         }
-        else if(prefix == "Scale:")
+        if(prefix == "Scale:")
         {
             iss >> scale;
+            continue;
         }
-        else if(prefix == "End")
+        if(prefix == "End")
         {
             switch (TObject)
             {
@@ -129,11 +163,15 @@ Scene::Scene(const std::string& scenePath)
                             case SPhong:
                                 model->shader = new PhongShader(model, *camera);
                                 break;
+                            case SHalfLambert:
+                                model->shader = new HalfLambertShader(model, *camera);
+                                break;
                         }
                         models.push_back(model);
                     }
                     break;
             }
+            // 恢复默认值
             position = Vector3();
             rotation = Vector3();
             scale = Vector3(1, 1, 1);

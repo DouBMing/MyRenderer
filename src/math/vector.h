@@ -446,6 +446,21 @@ struct Vector<4, byte>
         A = Clamp(A + c.A, 0, 255);
         return *this;
     }
+    Color& operator *=(const Color& c)
+    {
+        B *= c.B / 255.0f;
+        G *= c.G / 255.0f;
+        R *= c.R / 255.0f;
+        A = Clamp(A + c.A, 0, 255);
+        return *this;
+    }
+    Color& operator *=(float d)
+    {
+        B = Clamp(int(B * d), 0, 255);
+        G = Clamp(int(G * d), 0, 255);
+        R = Clamp(int(R * d), 0, 255);
+        return *this;
+    }
     static Color GetRandomColor()
     {
         return Color(std::rand()% 256, std::rand() % 256, std::rand() % 256);

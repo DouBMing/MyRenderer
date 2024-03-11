@@ -8,6 +8,7 @@ IShader::IShader(const Model* model, Camera& camera) : model(model)
     M = model->transform.localToWorldMatrix();
     V = camera.worldToViewMatrix();
     P = camera.projectionMatrix();
+    worldToObject = model->transform.worldToLocalMatrix();
 }
 
 IShader::~IShader() {}
@@ -34,51 +35,55 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
     std::vector<Light*>& lights = Scene::current->lights;
     Material* material = model->GetMaterial(faceIdx);
     Face face = model->face(faceIdx);
+    // 计算法线
     Vector3 sa = Vector3(worldCoords[face.vi[1]] - worldCoords[face.vi[0]]);
     Vector3 sb = Vector3(worldCoords[face.vi[2]] - worldCoords[face.vi[0]]);
     Vector3 normal = (sa ^ sb).normalized();
 
-    Color cLight;
-    for (Light* light : Scene::current->lights)
-    {
-        float intensity = std::max(0.0f, normal * light->direction()) * light->intensity;
-        cLight += light->color * intensity;
-    }
-
-    if (material == nullptr)
-        return cLight;
-
+    // 采样反射率
     Vector2 uv1 = model->texCoord(faceIdx, 0);
     Vector2 uv2 = model->texCoord(faceIdx, 1);
     Vector2 uv3 = model->texCoord(faceIdx, 2);
     float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
     float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    return cLight * material->SampleKd(u, v);
+    Color albedo = material->SampleKd(u, v);
+
+    // 环境光
+    Color ambient = Light::GetAmbient() * albedo;
+    // 漫反射
+    Color diffuse;
+    for (Light* light : Scene::current->lights)
+    {
+        diffuse += light->GetColor() * std::max(0.0f, normal * light->direction());
+    }
+    diffuse *= albedo;
+
+    return ambient + diffuse;
 }
 
 
 GouraudShader::GouraudShader(const Model* model, Camera& camera) : IShader(model, camera)
 {
-    vertexColors.resize(model->nVerts());
+    lightColors.resize(model->nVerts());
 }
 
 GouraudShader::~GouraudShader() {}
 
 Vector4 GouraudShader::vertex(int faceIdx, int i)
 {
-    Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
-    
     std::vector<Light*>& lights = Scene::current->lights;
-    Color cLight;
+    // 环境光
+    Color ambient = Light::GetAmbient();
+    // 漫反射
+    Color diffuse;
     for (Light* light : Scene::current->lights)
     {
-        Vector3 normal = M * Vector4(model->normal(faceIdx, i), 0);
-        float intensity = std::max(0.0f,  normal * light->direction()) * light->intensity;
-        cLight += light->color * intensity;
+        Vector3 normal = (model->normal(faceIdx, i) * (Matrix3x3)worldToObject).normalized();
+        diffuse += light->GetColor() * std::max(0.0f, normal * light->direction());
     }
-    vertexColors[model->face(faceIdx).vi[i]] = cLight;
+    lightColors[model->face(faceIdx).vi[i]] = ambient + diffuse;
 
-    return P * V * worldPos;
+    return P * V * M * Vector4(model->vert(faceIdx, i), 1);
 }
 
 Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
@@ -86,18 +91,18 @@ Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
     Material* material = model->GetMaterial(faceIdx);
     Face face = model->face(faceIdx);
 
-    Color cLight = vertexColors[face.vi[0]] * baryCoord[0] + vertexColors[face.vi[1]] * baryCoord[1] +
-        vertexColors[face.vi[2]] * baryCoord[2];
-
-    if (material == nullptr)
-        return cLight;
-
+    // 采样反射率
     Vector2 uv1 = model->texCoord(faceIdx, 0);
     Vector2 uv2 = model->texCoord(faceIdx, 1);
     Vector2 uv3 = model->texCoord(faceIdx, 2);
     float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
     float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    return cLight * material->SampleKd(u, v);
+    Color albedo = material->SampleKd(u, v);
+
+    Color lightColor = lightColors[face.vi[0]] * baryCoord[0] + lightColors[face.vi[1]] * baryCoord[1] +
+        lightColors[face.vi[2]] * baryCoord[2];
+
+    return lightColor * albedo;
 }
 
 
@@ -108,32 +113,77 @@ PhongShader::~PhongShader() {}
 Vector4 PhongShader::vertex(int faceIdx, int i)
 {
     // MVP变换
-    Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
-    return P * V * worldPos;
+    return P * V * M * Vector4(model->vert(faceIdx, i), 1);
 }
 
 Color PhongShader::fragment(Vector3 baryCoord, int faceIdx)
 {
     Material* material = model->GetMaterial(faceIdx);
 
+    // 计算法线
     Vector3 normal = model->normal(faceIdx, 0) * baryCoord[0] + model->normal(faceIdx, 1) * baryCoord[1] +
         model->normal(faceIdx, 2) * baryCoord[2];
-    normal = M * Vector4(normal, 0);
+    normal = (normal * (Matrix3x3)worldToObject).normalized();
 
-    Color cLight;
-    for (Light* light : Scene::current->lights)
-    {
-        float intensity = std::max(0.0f, normal * light->direction()) * light->intensity;
-        cLight += light->color * intensity;
-    }
-
-    if (material == nullptr)
-        return cLight;
-
+    // 采样反射率
     Vector2 uv1 = model->texCoord(faceIdx, 0);
     Vector2 uv2 = model->texCoord(faceIdx, 1);
     Vector2 uv3 = model->texCoord(faceIdx, 2);
     float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
     float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    return cLight * material->SampleKd(u, v);
+    Color albedo = material->SampleKd(u, v);
+
+    // 环境光
+    Color ambient = Light::GetAmbient() * albedo;
+    // 漫反射
+    Color diffuse;
+    for (Light* light : Scene::current->lights)
+    {
+        diffuse += light->GetColor() * std::max(0.0f, normal * light->direction());
+    }
+    diffuse *= albedo;
+
+    return ambient + diffuse;
+}
+
+
+HalfLambertShader::HalfLambertShader(const Model* model, Camera& camera) : IShader(model, camera) {}
+
+HalfLambertShader::~HalfLambertShader() {}
+
+Vector4 HalfLambertShader::vertex(int faceIdx, int i)
+{
+    // MVP变换
+    Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
+    return P * V * worldPos;
+}
+
+Color HalfLambertShader::fragment(Vector3 baryCoord, int faceIdx)
+{
+    Material* material = model->GetMaterial(faceIdx);
+
+    // 计算法线
+    Vector3 normal = model->normal(faceIdx, 0) * baryCoord[0] + model->normal(faceIdx, 1) * baryCoord[1] +
+        model->normal(faceIdx, 2) * baryCoord[2];
+    normal = (normal * (Matrix3x3)worldToObject).normalized();
+
+    // 采样反射率
+    Vector2 uv1 = model->texCoord(faceIdx, 0);
+    Vector2 uv2 = model->texCoord(faceIdx, 1);
+    Vector2 uv3 = model->texCoord(faceIdx, 2);
+    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
+    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
+    Color albedo = material->SampleKd(u, v);
+
+    // 环境光
+    Color ambient = Light::GetAmbient() * albedo;
+    // 漫反射
+    Color diffuse;
+    for (Light* light : Scene::current->lights)
+    {
+        diffuse += light->GetColor() * (normal * light->direction() * 0.5 + 0.5);
+    }
+    diffuse *= albedo;
+
+    return ambient + diffuse;
 }

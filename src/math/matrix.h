@@ -82,6 +82,19 @@ struct Matrix
         }
         return *this;
     }
+    template<int r, int c>
+    explicit operator Matrix<r, c>()
+    {
+        Matrix<r, c> mat;
+        for (int i = 0; i < std::min(r, row); i++)
+        {
+            for (int j = 0; j < std::min(c, col); j++)
+            {
+                mat[i][j] = m[i][j];
+            }
+        }
+        return mat;
+    }
 
     template<int r, int c>
     friend Matrix<r, c> operator -(const Matrix<r, c>& m);
@@ -93,6 +106,8 @@ struct Matrix
     friend Matrix<r, c> operator *(const Matrix<r, n>& lhs, const Matrix<n, c>& rhs);
     template<int r, int c>
     friend Vector<c, float> operator *(const Matrix<r, c>& lhs, const Vector<c, float>& v);
+    template<int r, int c>
+    friend Vector<r, float> operator *(const Vector<r, float>& v, const Matrix<r, c>& rhs);
     template<int r, int c>
     friend Matrix<r, c> operator *(const Matrix<r, c>& m, float d);
     template<int r, int c>
@@ -162,6 +177,18 @@ Vector<col, float> operator *(const Matrix<row, col>& lhs, const Vector<col, flo
     {
         for (int j = 0; j < col; j++)
             vec[i] += lhs.m[i][j] * v[j];
+    }
+    return vec;
+}
+
+template<int row, int col>
+Vector<row, float> operator *(const Vector<row, float>& v, const Matrix<row, col>& rhs)
+{
+    Vector<row, float> vec;
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < col; j++)
+            vec[i] += v[j] * rhs.m[j][i];
     }
     return vec;
 }
@@ -322,6 +349,19 @@ struct Matrix<n, n>
         }
         return *this;
     }
+    template<int r, int c>
+    explicit operator Matrix<r, c>()
+    {
+        Matrix<r, c> mat;
+        for (int i = 0; i < std::min(r, n); i++)
+        {
+            for (int j = 0; j < std::min(c, n); j++)
+            {
+                mat[i][j] = m[i][j];
+            }
+        }
+        return mat;
+    }
 
     static Matrix<n, n> identity()
     {
@@ -341,6 +381,8 @@ struct Matrix<n, n>
     friend Matrix<r, c> operator *(const Matrix<r, t>& lhs, const Matrix<t, c>& rhs);
     template<int r, int c>
     friend Vector<c, float> operator *(const Matrix<r, c>& lhs, const Vector<c, float>& v);
+    template<int r, int c>
+    friend Vector<r, float> operator *(const Vector<r, float>& v, const Matrix<r, c>& rhs);
     template<int r, int c>
     friend Matrix<r, c> operator *(const Matrix<r, c>& m, float d);
     template<int r, int c>
@@ -385,6 +427,7 @@ private:
 };
 
 using Matrix4x4 = Matrix<4, 4>;
+using Matrix3x3 = Matrix<3, 3>;
 
 Matrix4x4 MatrixTranslate(const Vector3& p);
 Matrix4x4 MatrixRotate(const Quaternion& q);

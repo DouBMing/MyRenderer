@@ -1,15 +1,17 @@
 Camera:
     ScreenSize: 1600 900
-    FOV:        20
+    FOV:        60
     Position:   4.5 0 -2.5
     Rotation:   -2 -60 0
 End
+
+AmbientColor:   54 58 66
 
 Light:
     Intensity:  1.0
     Color:      255 255 255
     Position:   0 3 0
-    Rotation:   0 -66 0
+    Rotation:   0 0 0
 End
 
 Model:
@@ -22,7 +24,7 @@ Model:
 
 Model:
     ObjName:    koishi
-    Shader:     PhongShader
+    Shader:     HalfLambertShader
     Position:   4 -0.5 -2.2
     Rotation:   0 120 0
     Scale:      1 1 1
@@ -31,7 +33,7 @@ End
 Model:
     ObjName:    moon
     Shader:     FlatShader
-//End
+End
 
 Model:
     ObjName:    diablo3_pose

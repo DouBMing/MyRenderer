@@ -33,6 +33,8 @@ Model::~Model()
 {
     if (shader != nullptr)
         delete shader;
+    for (Material* m : materials)
+        delete m;
 }
 
 int Model::nVerts() const
@@ -72,8 +74,8 @@ Vector3 Model::operator [](int index) const
 
 Material* Model::GetMaterial(int faceIdx) const
 {
-    if (materials.size() == 0)
-        return nullptr;
+    if (materials.size() == 1)
+        return materials[0];
     return materials[materialIndices[faceIdx]];
 }
 
@@ -153,6 +155,12 @@ void Model::LoadOBJ(const string& modelName)
     bounds.maxPoint -= bounds.center();
     for (int i = 0; i < verts.size(); i++)
         verts[i] -= boundsCenter;   // 模型统一以边界框中心为原点
+    
+    // 如果没有材质，使用默认材质
+    if (materials.size() == 0)
+    {
+        materials.push_back(new Material(""));
+    }
 }
 
 void Model::LoadMTL(const string& materialName)

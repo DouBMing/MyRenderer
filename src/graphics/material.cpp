@@ -8,6 +8,9 @@ Material::Material(const std::string& name) : name(name)
     Ns = 1;
     d = 1;
     illum = 1;
+    ambientMap = nullptr;
+    diffuseMap = nullptr;
+    specularMap = nullptr;
 }
 
 Material::~Material()
@@ -29,9 +32,9 @@ Color Material::SampleKa(float u, float v)
 
 Color Material::SampleKd(float u, float v)
 {
-    if (diffuseMap != nullptr)
-        return Color(Kd) * diffuseMap->Get(diffuseMap->width * u, diffuseMap->height * v);
-    return Color(Kd);
+    if (diffuseMap == nullptr)
+        return Color(Kd);
+    return Color(Kd) * diffuseMap->Get(diffuseMap->width * u, diffuseMap->height * v);
 }
 
 Color Material::SampleKs(float u, float v)
