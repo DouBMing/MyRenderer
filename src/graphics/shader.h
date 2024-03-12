@@ -22,19 +22,24 @@ protected:
     const Model* model;
     Matrix4x4 M, V, P;
     Matrix4x4 worldToObject;
+
+    Vector3 WorldSpaceViewDir(Vector3 worldPos);
+    Vector3 ToWorldNormal(Vector3 normal);
+    Vector2 GetUV(Vector3 baryCoord, int faceIdx);
+    Vector3 GetWorldNormal(Vector3 baryCoord, int faceIdx);
 };
 
 // 平面着色shader
 class FlatShader : public IShader
 {
 public:
-    FlatShader(const Model* model, Camera& camera);
+    FlatShader(Color cSpecular, float gloss, const Model* model, Camera& camera);
     virtual ~FlatShader() override;
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
 private:
     std::vector<Vector4> worldCoords;
-    Color specular;
+    Color specularColor;
     float gloss;
 };
 
@@ -42,13 +47,14 @@ private:
 class GouraudShader : public IShader
 {
 public:
-    GouraudShader(const Model* model, Camera& camera);
+    GouraudShader(Color cSpecular, float gloss, const Model* model, Camera& camera);
     virtual ~GouraudShader() override;
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
 private:
+    std::vector<Vector4> worldCoords;
     std::vector<Color> lightColors;
-    Color specular;
+    Color specularColor;
     float gloss;
 };
 
@@ -56,23 +62,38 @@ private:
 class PhongShader : public IShader
 {
 public:
-    PhongShader(const Model* model, Camera& camera);
+    PhongShader(Color cSpecular, float gloss, const Model* model, Camera& camera);
     virtual ~PhongShader() override;
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
 private:
-    Color specular;
+    std::vector<Vector4> worldCoords;
+    Color specularColor;
+    float gloss;
+};
+
+class BlinnPhongShader : public IShader
+{
+public:
+    BlinnPhongShader(Color cSpecular, float gloss, const Model* model, Camera& camera);
+    virtual ~BlinnPhongShader() override;
+    virtual Vector4 vertex(int faceIdx, int i) override;
+    virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
+private:
+    std::vector<Vector4> worldCoords;
+    Color specularColor;
     float gloss;
 };
 
 class HalfLambertShader : public IShader
 {
 public:
-    HalfLambertShader(const Model* model, Camera& camera);
+    HalfLambertShader(Color cSpecular, float gloss, const Model* model, Camera& camera);
     virtual ~HalfLambertShader() override;
     virtual Vector4 vertex(int faceIdx, int i) override;
     virtual Color fragment(Vector3 baryCoord, int faceIdx) override;
 private:
-    Color specular;
+    std::vector<Vector4> worldCoords;
+    Color specularColor;
     float gloss;
 };

@@ -4,10 +4,11 @@
 
 enum ShaderType
 {
-    None,
+    SNone,
     SFlat,
     SGouraud,
     SPhong,
+    SBlinnPhong,
     SHalfLambert
 };
 
@@ -35,8 +36,9 @@ Scene::Scene(const std::string& scenePath)
     std::string line;
     ObjectType TObject;
     Vector2Int screenSize;
-    float fov, intensity;
-    Color cLight;
+    float fov, intensity, gloss;
+    Color cLight, specular;
+    LightType tLight;
     std::string modelName;
     ShaderType TShader;
     Vector3 position, rotation, scale;
@@ -99,6 +101,11 @@ Scene::Scene(const std::string& scenePath)
                     iss >> cLight;
                     continue;
                 }
+                else if (prefix == "Type:")
+                {
+                    iss >> tLight;
+                    continue;
+                }
             case TModel:
                 if(prefix == "ObjName:")
                 {
@@ -110,15 +117,27 @@ Scene::Scene(const std::string& scenePath)
                     std::string shaderName;
                     iss >> shaderName;
                     if (shaderName == "NoShader")
-                        TShader = None;
+                        TShader = SNone;
                     else if (shaderName == "FlatShader")
                         TShader = SFlat;
                     else if (shaderName == "GouraudShader")
                         TShader = SGouraud;
                     else if (shaderName == "PhongShader")
                         TShader = SPhong;
+                    else if (shaderName == "BlinnPhongShader")
+                        TShader = SBlinnPhong;
                     else if (shaderName == "HalfLambertShader")
                         TShader = SHalfLambert;
+                    continue;
+                }
+                else if (prefix == "Specular:")
+                {
+                    iss >> specular;
+                    continue;
+                }
+                else if (prefix == "Gloss:")
+                {
+                    iss >> gloss;
                     continue;
                 }
         }
@@ -146,7 +165,7 @@ Scene::Scene(const std::string& scenePath)
                     camera = new Camera(screenSize.x, screenSize.y, fov, position, rotation);
                     break;
                 case TLight:
-                    lights.push_back(new Light(intensity, cLight, position, rotation));
+                    lights.push_back(new Light(intensity, cLight, tLight, position, rotation));
                     break;
                 case TModel:
                     {
@@ -155,16 +174,16 @@ Scene::Scene(const std::string& scenePath)
                         switch (TShader)
                         {
                             case SFlat:
-                                model->shader = new FlatShader(model, *camera);
+                                model->shader = new FlatShader(specular, gloss, model, *camera);
                                 break;
                             case SGouraud:
-                                model->shader = new GouraudShader(model, *camera);
+                                model->shader = new GouraudShader(specular, gloss, model, *camera);
                                 break;
                             case SPhong:
-                                model->shader = new PhongShader(model, *camera);
+                                model->shader = new PhongShader(specular, gloss, model, *camera);
                                 break;
                             case SHalfLambert:
-                                model->shader = new HalfLambertShader(model, *camera);
+                                model->shader = new HalfLambertShader(specular, gloss, model, *camera);
                                 break;
                         }
                         models.push_back(model);
@@ -176,8 +195,10 @@ Scene::Scene(const std::string& scenePath)
             rotation = Vector3();
             scale = Vector3(1, 1, 1);
             intensity = 1.0;
-            cLight = Color(255, 255, 255);
-            TShader = None;
+            cLight = Color::White;
+            TShader = SNone;
+            specular = Color::White;
+            gloss = 20;
         }
     }
 }

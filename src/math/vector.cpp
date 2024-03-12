@@ -63,3 +63,8 @@ Vector3 BarycentricCoordinate(Vector3 p, Vector3 p1, Vector3 p2, Vector3 p3)
     float b = ((p - p3) ^ (p1 - p3)).magnitude() / s;
     return Vector3(a, b, 1 - a - b);
 }
+
+Vector3 Reflect(Vector3 in, Vector3 normal)
+{
+    return in - 2 * (in * normal) * normal;
+}

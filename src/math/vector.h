@@ -131,6 +131,15 @@ Vector<n, T> operator *(const Vector<n, T>& a, float d)
 }
 
 template<int n, typename T>
+Vector<n, T> operator *(float d, const Vector<n, T>& a)
+{
+    Vector<n, T> result;
+    for (int i = 0; i < n; i++)
+        result[i] = a[i] * d;
+    return result;
+}
+
+template<int n, typename T>
 Vector<n, T> operator /(const Vector<n, T>& a, float d)
 {
     Vector<n, T> result;
@@ -493,5 +502,6 @@ Vector<3, T> operator ^(const Vector<3, T>& lhs, const Vector<3, T>& rhs)
 
 Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3);
 Vector3 BarycentricCoordinate(Vector3 p, Vector3 p1, Vector3 p2, Vector3 p3);
+Vector3 Reflect(Vector3 in, Vector3 normal);
 float Distance(Vector3 p1, Vector3 p2);
 float Distance(Vector2 p1, Vector2 p2);

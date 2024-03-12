@@ -10,9 +10,12 @@ AmbientColor:   54 58 66
 Light:
     Intensity:  1.0
     Color:      255 255 255
+    Type:       Directional
     Position:   0 3 0
     Rotation:   0 0 0
 End
+
+// Shaders: FlatShader GouraudShader PhongShader HalfLambertShader BlinnPhongShader
 
 Model:
     ObjName:    african_head
@@ -24,7 +27,9 @@ Model:
 
 Model:
     ObjName:    koishi
-    Shader:     HalfLambertShader
+    Shader:     PhongShader
+        Specular:   255 255 255
+        Gloss:      40
     Position:   4 -0.5 -2.2
     Rotation:   0 120 0
     Scale:      1 1 1

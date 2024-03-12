@@ -13,8 +13,36 @@ IShader::IShader(const Model* model, Camera& camera) : model(model)
 
 IShader::~IShader() {}
 
+Vector3 IShader::WorldSpaceViewDir(Vector3 worldPos)
+{
+    return (Scene::current->camera->transform.position - worldPos).normalized();
+}
 
-FlatShader::FlatShader(const Model* model, Camera& camera) : IShader(model, camera)
+Vector3 IShader::ToWorldNormal(Vector3 normal)
+{
+    return (normal * (Matrix3x3)worldToObject).normalized();
+}
+
+Vector2 IShader::GetUV(Vector3 baryCoord, int faceIdx)
+{
+    Vector2 uv1 = model->texCoord(faceIdx, 0);
+    Vector2 uv2 = model->texCoord(faceIdx, 1);
+    Vector2 uv3 = model->texCoord(faceIdx, 2);
+    return uv1 * baryCoord[0] + uv2 * baryCoord[1] + uv3 * baryCoord[2];
+}
+
+Vector3 IShader::GetWorldNormal(Vector3 baryCoord, int faceIdx)
+{
+    Vector3 normal1 = model->normal(faceIdx, 0);
+    Vector3 normal2 = model->normal(faceIdx, 1);
+    Vector3 normal3 = model->normal(faceIdx, 2);
+    Vector3 normal = normal1 * baryCoord[0] + normal2 * baryCoord[1] + normal3 * baryCoord[2];
+    return ToWorldNormal(normal);
+}
+
+
+FlatShader::FlatShader(Color cSpecular, float gloss, const Model* model, Camera& camera) :
+    IShader(model, camera), specularColor(cSpecular), gloss(gloss)
 {
     worldCoords.resize(model->nVerts());
 }
@@ -32,7 +60,6 @@ Vector4 FlatShader::vertex(int faceIdx, int i)
 
 Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
 {
-    std::vector<Light*>& lights = Scene::current->lights;
     Material* material = model->GetMaterial(faceIdx);
     Face face = model->face(faceIdx);
     // 计算法线
@@ -41,29 +68,31 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
     Vector3 normal = (sa ^ sb).normalized();
 
     // 采样反射率
-    Vector2 uv1 = model->texCoord(faceIdx, 0);
-    Vector2 uv2 = model->texCoord(faceIdx, 1);
-    Vector2 uv3 = model->texCoord(faceIdx, 2);
-    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    Color albedo = material->SampleKd(u, v);
+    Vector2 uv = GetUV(baryCoord, faceIdx);
+    Color albedo = material->SampleKd(uv.x, uv.y);
 
     // 环境光
-    Color ambient = Light::GetAmbient() * albedo;
+    Color ambient = Light::GetAmbient();
     // 漫反射
-    Color diffuse;
+    Color diffuse, specular;
     for (Light* light : Scene::current->lights)
     {
-        diffuse += light->GetColor() * std::max(0.0f, normal * light->direction());
+        // 面位置
+        Vector3 worldPos = worldCoords[face.vi[0]] / 3 + worldCoords[face.vi[1]] / 3 + worldCoords[face.vi[2]] / 3;
+        diffuse += light->GetColor() * std::max(0.0f, normal * light->Direction(worldPos));
+        Vector3 reflectDir = Reflect(-light->Direction(worldPos), normal).normalized();
+        Vector3 viewDir = WorldSpaceViewDir(worldPos);
+        specular += light->GetColor() * specularColor * std::pow(std::max(0.0f, reflectDir * viewDir), gloss);
     }
-    diffuse *= albedo;
 
-    return ambient + diffuse;
+    return (ambient + diffuse + specular) * albedo;
 }
 
 
-GouraudShader::GouraudShader(const Model* model, Camera& camera) : IShader(model, camera)
+GouraudShader::GouraudShader(Color cSpecular, float gloss, const Model* model, Camera& camera) :
+    IShader(model, camera), specularColor(cSpecular), gloss(gloss)
 {
+    worldCoords.resize(model->nVerts());
     lightColors.resize(model->nVerts());
 }
 
@@ -71,19 +100,25 @@ GouraudShader::~GouraudShader() {}
 
 Vector4 GouraudShader::vertex(int faceIdx, int i)
 {
-    std::vector<Light*>& lights = Scene::current->lights;
+    Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
+    Face face = model->face(faceIdx);
+    worldCoords[model->face(faceIdx).vi[i]] = worldPos;
+    
+    Vector3 normal = ToWorldNormal(model->normal(faceIdx, i));
     // 环境光
     Color ambient = Light::GetAmbient();
     // 漫反射
-    Color diffuse;
+    Color diffuse, specular;
     for (Light* light : Scene::current->lights)
     {
-        Vector3 normal = (model->normal(faceIdx, i) * (Matrix3x3)worldToObject).normalized();
-        diffuse += light->GetColor() * std::max(0.0f, normal * light->direction());
+        diffuse += light->GetColor() * std::max(0.0f, normal * light->Direction(worldPos));
+        Vector3 reflectDir = Reflect(-light->Direction(worldPos), normal).normalized();
+        Vector3 viewDir = WorldSpaceViewDir(worldPos);
+        specular += light->GetColor() * specularColor * std::pow(std::max(0.0f, reflectDir * viewDir), gloss);
     }
-    lightColors[model->face(faceIdx).vi[i]] = ambient + diffuse;
+    lightColors[model->face(faceIdx).vi[i]] = ambient + diffuse + specular;
 
-    return P * V * M * Vector4(model->vert(faceIdx, i), 1);
+    return P * V * worldPos;
 }
 
 Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
@@ -92,12 +127,8 @@ Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
     Face face = model->face(faceIdx);
 
     // 采样反射率
-    Vector2 uv1 = model->texCoord(faceIdx, 0);
-    Vector2 uv2 = model->texCoord(faceIdx, 1);
-    Vector2 uv3 = model->texCoord(faceIdx, 2);
-    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    Color albedo = material->SampleKd(u, v);
+    Vector2 uv = GetUV(baryCoord, faceIdx);
+    Color albedo = material->SampleKd(uv.x, uv.y);
 
     Color lightColor = lightColors[face.vi[0]] * baryCoord[0] + lightColors[face.vi[1]] * baryCoord[1] +
         lightColors[face.vi[2]] * baryCoord[2];
@@ -106,48 +137,101 @@ Color GouraudShader::fragment(Vector3 baryCoord, int faceIdx)
 }
 
 
-PhongShader::PhongShader(const Model* model, Camera& camera) : IShader(model, camera) {}
+PhongShader::PhongShader(Color cSpecular, float gloss, const Model* model, Camera& camera) :
+    IShader(model, camera), specularColor(cSpecular), gloss(gloss)
+{
+    worldCoords.resize(model->nVerts());
+}
 
 PhongShader::~PhongShader() {}
 
 Vector4 PhongShader::vertex(int faceIdx, int i)
 {
     // MVP变换
-    return P * V * M * Vector4(model->vert(faceIdx, i), 1);
+    Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
+    Face face = model->face(faceIdx);
+    worldCoords[model->face(faceIdx).vi[i]] = worldPos;
+    return P * V * worldPos;
 }
 
 Color PhongShader::fragment(Vector3 baryCoord, int faceIdx)
 {
     Material* material = model->GetMaterial(faceIdx);
-
+    Face face = model->face(faceIdx);
     // 计算法线
-    Vector3 normal = model->normal(faceIdx, 0) * baryCoord[0] + model->normal(faceIdx, 1) * baryCoord[1] +
-        model->normal(faceIdx, 2) * baryCoord[2];
-    normal = (normal * (Matrix3x3)worldToObject).normalized();
-
+    Vector3 normal = GetWorldNormal(baryCoord, faceIdx);
+    // 像素位置
+    Vector3 worldPos = worldCoords[face.vi[0]] * baryCoord[0] + worldCoords[face.vi[1]] * baryCoord[1] + worldCoords[face.vi[2]] * baryCoord[2];
     // 采样反射率
-    Vector2 uv1 = model->texCoord(faceIdx, 0);
-    Vector2 uv2 = model->texCoord(faceIdx, 1);
-    Vector2 uv3 = model->texCoord(faceIdx, 2);
-    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    Color albedo = material->SampleKd(u, v);
+    Vector2 uv = GetUV(baryCoord, faceIdx);
+    Color albedo = material->SampleKd(uv.x, uv.y);
 
     // 环境光
-    Color ambient = Light::GetAmbient() * albedo;
-    // 漫反射
-    Color diffuse;
+    Color ambient = Light::GetAmbient();
+    // 漫反射、高光
+    Color diffuse, specular;
     for (Light* light : Scene::current->lights)
     {
-        diffuse += light->GetColor() * std::max(0.0f, normal * light->direction());
+        diffuse += light->GetColor() * std::max(0.0f, normal * light->Direction(worldPos));
+        Vector3 reflectDir = Reflect(-light->Direction(worldPos), normal).normalized();
+        Vector3 viewDir = WorldSpaceViewDir(worldPos);
+        specular += light->GetColor() * specularColor * std::pow(std::max(0.0f, reflectDir * viewDir), gloss);
     }
-    diffuse *= albedo;
 
-    return ambient + diffuse;
+    return (ambient + diffuse + specular) * albedo;
 }
 
 
-HalfLambertShader::HalfLambertShader(const Model* model, Camera& camera) : IShader(model, camera) {}
+BlinnPhongShader::BlinnPhongShader(Color cSpecular, float gloss, const Model* model, Camera& camera) :
+    IShader(model, camera), specularColor(cSpecular), gloss(gloss)
+{
+    worldCoords.resize(model->nVerts());
+}
+
+BlinnPhongShader::~BlinnPhongShader() {}
+
+Vector4 BlinnPhongShader::vertex(int faceIdx, int i)
+{
+    // MVP变换
+    Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
+    Face face = model->face(faceIdx);
+    worldCoords[model->face(faceIdx).vi[i]] = worldPos;
+    return P * V * worldPos;
+}
+
+Color BlinnPhongShader::fragment(Vector3 baryCoord, int faceIdx)
+{
+    Material* material = model->GetMaterial(faceIdx);
+    Face face = model->face(faceIdx);
+    // 计算法线
+    Vector3 normal = GetWorldNormal(baryCoord, faceIdx);
+    // 像素位置
+    Vector3 worldPos = worldCoords[face.vi[0]] * baryCoord[0] + worldCoords[face.vi[1]] * baryCoord[1] + worldCoords[face.vi[2]] * baryCoord[2];
+    // 采样反射率
+    Vector2 uv = GetUV(baryCoord, faceIdx);
+    Color albedo = material->SampleKd(uv.x, uv.y);
+
+    // 环境光
+    Color ambient = Light::GetAmbient();
+    // 漫反射、高光
+    Color diffuse, specular;
+    for (Light* light : Scene::current->lights)
+    {
+        diffuse += light->GetColor() * std::max(0.0f, normal * light->Direction(worldPos));
+        Vector3 viewDir = WorldSpaceViewDir(worldPos);
+        Vector3 halfDir = (light->Direction(worldPos) + viewDir).normalized();
+        specular += light->GetColor() * specularColor * std::pow(std::max(0.0f, normal * halfDir), gloss);
+    }
+
+    return (ambient + diffuse + specular) * albedo;
+}
+
+
+HalfLambertShader::HalfLambertShader(Color cSpecular, float gloss, const Model* model, Camera& camera) :
+    IShader(model, camera), specularColor(cSpecular), gloss(gloss)
+{
+    worldCoords.resize(model->nVerts());
+}
 
 HalfLambertShader::~HalfLambertShader() {}
 
@@ -155,35 +239,34 @@ Vector4 HalfLambertShader::vertex(int faceIdx, int i)
 {
     // MVP变换
     Vector4 worldPos = M * Vector4(model->vert(faceIdx, i), 1);
+    Face face = model->face(faceIdx);
+    worldCoords[model->face(faceIdx).vi[i]] = worldPos;
     return P * V * worldPos;
 }
 
 Color HalfLambertShader::fragment(Vector3 baryCoord, int faceIdx)
 {
     Material* material = model->GetMaterial(faceIdx);
-
+    Face face = model->face(faceIdx);
     // 计算法线
-    Vector3 normal = model->normal(faceIdx, 0) * baryCoord[0] + model->normal(faceIdx, 1) * baryCoord[1] +
-        model->normal(faceIdx, 2) * baryCoord[2];
-    normal = (normal * (Matrix3x3)worldToObject).normalized();
-
+    Vector3 normal = GetWorldNormal(baryCoord, faceIdx);
+    // 像素位置
+    Vector3 worldPos = worldCoords[face.vi[0]] * baryCoord[0] + worldCoords[face.vi[1]] * baryCoord[1] + worldCoords[face.vi[2]] * baryCoord[2];
     // 采样反射率
-    Vector2 uv1 = model->texCoord(faceIdx, 0);
-    Vector2 uv2 = model->texCoord(faceIdx, 1);
-    Vector2 uv3 = model->texCoord(faceIdx, 2);
-    float u = uv1[0] * baryCoord[0] + uv2[0] * baryCoord[1] + uv3[0] * baryCoord[2];
-    float v = uv1[1] * baryCoord[0] + uv2[1] * baryCoord[1] + uv3[1] * baryCoord[2];
-    Color albedo = material->SampleKd(u, v);
+    Vector2 uv = GetUV(baryCoord, faceIdx);
+    Color albedo = material->SampleKd(uv.x, uv.y);
 
     // 环境光
-    Color ambient = Light::GetAmbient() * albedo;
-    // 漫反射
-    Color diffuse;
+    Color ambient = Light::GetAmbient();
+    // 漫反射、高光
+    Color diffuse, specular;
     for (Light* light : Scene::current->lights)
     {
-        diffuse += light->GetColor() * (normal * light->direction() * 0.5 + 0.5);
+        diffuse += light->GetColor() * (normal * light->Direction(worldPos) * 0.5 + 0.5);
+        Vector3 reflectDir = Reflect(-light->Direction(worldPos), normal).normalized();
+        Vector3 viewDir = WorldSpaceViewDir(worldPos);
+        specular += light->GetColor() * specularColor * std::pow(std::max(0.0f, reflectDir * viewDir), gloss);
     }
-    diffuse *= albedo;
 
-    return ambient + diffuse;
+    return (ambient + diffuse + specular) * albedo;
 }

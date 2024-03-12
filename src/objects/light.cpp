@@ -1,13 +1,31 @@
 #include "light.h"
 
-Light::Light(float intensity, Color c) : intensity(intensity), color(c) {}
-
-Light::Light(float intensity, Color c, Vector3 position, Vector3 rotation) : Object(position, rotation, Vector3(1, 1, 1)),
-    intensity(intensity), color(c) {}
-
-Vector3 Light::direction() const
+std::istream& operator >>(std::istream& is, LightType& tLight)
 {
-    return -transform.forward();
+    std::string sType;
+    is >> sType;
+    if (sType == "Directional")
+        tLight = Directional;
+    else if (sType == "Point")
+        tLight = Point;
+    return is;
+}
+
+Light::Light(float intensity, Color c, LightType type) : intensity(intensity), color(c), type(type) {}
+
+Light::Light(float intensity, Color c, LightType type, Vector3 position, Vector3 rotation) : Object(position, rotation, Vector3(1, 1, 1)),
+    intensity(intensity), color(c), type(type) {}
+
+Vector3 Light::Direction(Vector3 worldPos) const
+{
+    switch (type)
+    {
+        case Directional:
+            return -transform.forward();
+        case Point:
+            return transform.position - worldPos;
+    }
+    return Vector3();
 }
 
 Color Light::GetColor() const

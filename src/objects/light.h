@@ -1,12 +1,20 @@
 #pragma once
 #include "object.h"
 
+enum LightType
+{
+    Directional,
+    Point
+};
+
+std::istream& operator >>(std::istream& is, LightType& tLight);
+
 class Light : public Object
 {
 public:
-    Light(float intensity, Color c);
-    Light(float intensity, Color c, Vector3 position, Vector3 rotation);
-    Vector3 direction() const;
+    Light(float intensity, Color c, LightType type);
+    Light(float intensity, Color c, LightType type, Vector3 position, Vector3 rotation);
+    Vector3 Direction(Vector3 worldPos) const;
     Color GetColor() const;
 
     static Color GetAmbient();
@@ -14,5 +22,6 @@ public:
 private:
     float intensity;
     Color color;
+    LightType type;
     static Color ambient;   // 环境光
 };
