@@ -11,6 +11,7 @@ Material::Material(const std::string& name) : name(name)
     ambientMap = nullptr;
     diffuseMap = nullptr;
     specularMap = nullptr;
+    bumpMap = nullptr;
 }
 
 Material::~Material()
@@ -21,6 +22,8 @@ Material::~Material()
         delete diffuseMap;
     if (specularMap != nullptr)
         delete specularMap;
+    if (bumpMap != nullptr)
+        delete bumpMap;
 }
 
 Color Material::SampleKa(float u, float v)

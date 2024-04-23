@@ -48,7 +48,7 @@ std::istream& operator >>(std::istream& is, Color& c)
     return is;
 }
 
-Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3)
+Vector3 BarycentricCoordinate(const Vector2& p, const Vector2& p1, const Vector2& p2, const Vector2& p3)
 {
     float s = (p1 - p2) ^ (p3 - p2);
     float a = (p - p2) ^ (p3 - p2) / s;
@@ -56,7 +56,7 @@ Vector3 BarycentricCoordinate(Vector2 p, Vector2 p1, Vector2 p2, Vector2 p3)
     return Vector3(a, b, 1 - a - b);
 }
 
-Vector3 BarycentricCoordinate(Vector3 p, Vector3 p1, Vector3 p2, Vector3 p3)
+Vector3 BarycentricCoordinate(const Vector3& p, const Vector3& p1, const Vector3& p2, const Vector3& p3)
 {
     float s = ((p1 - p2) ^ (p3 - p2)).magnitude();
     float a = ((p - p2) ^ (p3 - p2)).magnitude() / s;
@@ -64,7 +64,7 @@ Vector3 BarycentricCoordinate(Vector3 p, Vector3 p1, Vector3 p2, Vector3 p3)
     return Vector3(a, b, 1 - a - b);
 }
 
-Vector3 Reflect(Vector3 in, Vector3 normal)
+Vector3 Reflect(const Vector3& in, const Vector3& normal)
 {
     return in - 2 * (in * normal) * normal;
 }

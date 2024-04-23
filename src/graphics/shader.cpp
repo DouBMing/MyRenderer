@@ -13,30 +13,30 @@ IShader::IShader(const Model* model, Camera& camera) : model(model)
 
 IShader::~IShader() {}
 
-Vector3 IShader::WorldSpaceViewDir(Vector3 worldPos)
+Vector3 IShader::WorldSpaceViewDir(const Vector3& worldPos)
 {
     return (Scene::current->camera->transform.position - worldPos).normalized();
 }
 
-Vector3 IShader::ToWorldNormal(Vector3 normal)
+Vector3 IShader::ToWorldNormal(const Vector3& normal)
 {
     return (normal * (Matrix3x3)worldToObject).normalized();
 }
 
-Vector2 IShader::GetUV(Vector3 baryCoord, int faceIdx)
+Vector2 IShader::GetUV(const Vector3& baryCoord, int faceIdx)
 {
     Vector2 uv1 = model->texCoord(faceIdx, 0);
     Vector2 uv2 = model->texCoord(faceIdx, 1);
     Vector2 uv3 = model->texCoord(faceIdx, 2);
-    return uv1 * baryCoord[0] + uv2 * baryCoord[1] + uv3 * baryCoord[2];
+    return baryCoord * Matrix<3, 2>({uv1, uv2, uv3});
 }
 
-Vector3 IShader::GetWorldNormal(Vector3 baryCoord, int faceIdx)
+Vector3 IShader::GetWorldNormal(const Vector3& baryCoord, int faceIdx)
 {
     Vector3 normal1 = model->normal(faceIdx, 0);
     Vector3 normal2 = model->normal(faceIdx, 1);
     Vector3 normal3 = model->normal(faceIdx, 2);
-    Vector3 normal = normal1 * baryCoord[0] + normal2 * baryCoord[1] + normal3 * baryCoord[2];
+    Vector3 normal = baryCoord * Matrix3x3({normal1, normal2, normal3});
     return ToWorldNormal(normal);
 }
 
@@ -78,7 +78,7 @@ Color FlatShader::fragment(Vector3 baryCoord, int faceIdx)
     for (Light* light : Scene::current->lights)
     {
         // 面位置
-        Vector3 worldPos = worldCoords[face.vi[0]] / 3 + worldCoords[face.vi[1]] / 3 + worldCoords[face.vi[2]] / 3;
+        Vector3 worldPos = (worldCoords[face.vi[0]] + worldCoords[face.vi[1]] + worldCoords[face.vi[2]]) / 3;
         diffuse += light->GetColor() * std::max(0.0f, normal * light->Direction(worldPos));
         Vector3 reflectDir = Reflect(-light->Direction(worldPos), normal).normalized();
         Vector3 viewDir = WorldSpaceViewDir(worldPos);

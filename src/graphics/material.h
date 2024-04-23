@@ -19,4 +19,5 @@ private:
     Bitmap* ambientMap;
     Bitmap* diffuseMap;
     Bitmap* specularMap;
+    Bitmap* bumpMap;
 };

@@ -1,5 +1,5 @@
 Camera:
-    ScreenSize: 1600 900
+    ScreenSize: 1280 720
     FOV:        60
     Position:   4.5 0 -2.5
     Rotation:   -2 -60 0
@@ -37,7 +37,9 @@ End
 
 Model:
     ObjName:    moon
-    Shader:     FlatShader
+    Shader:     PhongShader
+        Specular:   255 255 255
+        Gloss:      10
 End
 
 Model:

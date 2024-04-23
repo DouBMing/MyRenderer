@@ -68,7 +68,6 @@ void Camera::Render(const Model& model)
     GeometryStage(model);
     // 光栅化阶段
     RasterizationStage(model);
-    //DrawWireframe(model);
 }
 
 void Camera::GeometryStage(const Model& model)
@@ -86,8 +85,8 @@ void Camera::GeometryStage(const Model& model)
         {
             // 顶点着色
             Vector4 clipPos = model.shader->vertex(i, j);
-            clipPos = clipPos / clipPos.w;
             // 屏幕映射
+            clipPos = clipPos / clipPos.w;
             screenCoordsBuffer[model.face(i).vi[j]] = mScreen * clipPos;
         }
     }
@@ -106,17 +105,21 @@ void Camera::RasterizationStage(const Model& model)
         Bounds bounds(sp1, sp2, sp3);
         // 剔除完全在边界外的三角形
         if (bounds.minPoint.x > pixelWidth || bounds.minPoint.y > pixelHeight || bounds.maxPoint.x < 0 || bounds.maxPoint.y < 0)
-            continue;
-
-        for (int sy = std::max(0.0f, bounds.minPoint.y); sy < std::min((float)pixelHeight, bounds.maxPoint.y); sy++)
         {
-            for (int sx = std::max(0.0f, bounds.minPoint.x); sx < std::min((float)pixelWidth, bounds.maxPoint.x); sx++)
+            continue;
+        }
+
+        float maxX = std::min((float)pixelWidth, bounds.maxPoint.x);
+        float maxY = std::min((float)pixelHeight, bounds.maxPoint.y);
+        for (int sy = std::max(0.0f, bounds.minPoint.y); sy < maxY; sy++)
+        {
+            for (int sx = std::max(0.0f, bounds.minPoint.x); sx < maxX; sx++)
             {
-                Vector2 p(sx, sy);
+                Vector2 p(sx + 0.5f, sy + 0.5f);
                 Vector3 baryCoord = BarycentricCoordinate(p, sp1, sp2, sp3);
                 if (baryCoord[0] < 0 || baryCoord[1] < 0 || baryCoord[2] < 0)
                     continue;
-                float sz = sp1.z * baryCoord[0] + sp2.z * baryCoord[1] + sp3.z * baryCoord[2];
+                float sz = baryCoord * Vector3(sp1.z, sp2.z, sp3.z);
                 // z-Test
                 if (sz < -1 || sz > 1)
                     continue;
@@ -125,7 +128,7 @@ void Camera::RasterizationStage(const Model& model)
                 zBuffer[sy][sx] = sz;
                 // 三角面世界空间的顶点
                 Color c = model.shader->fragment(baryCoord, i);
-                screen.Set({sx, sy}, c);
+                screen.Set(sx, sy, c);
             }
         }
     }
@@ -136,38 +139,36 @@ void Camera::FillRandomColor(const Model& model)
     for (int i = 0; i < model.nFaces(); i++)
     {
         Face face = model.face(i);
-        Vector3 p1 = screenCoordsBuffer[face.vi[0]];
-        Vector3 p2 = screenCoordsBuffer[face.vi[1]];
-        Vector3 p3 = screenCoordsBuffer[face.vi[2]];
+        Vector3 sp1 = screenCoordsBuffer[face.vi[0]];
+        Vector3 sp2 = screenCoordsBuffer[face.vi[1]];
+        Vector3 sp3 = screenCoordsBuffer[face.vi[2]];
         Color c = Color::GetRandomColor();
 
+        Bounds bounds(sp1, sp2, sp3);
         Vector2 minPoint, maxPoint;
-        minPoint.x = std::min(std::min(p1.x, p2.x), p3.x);
-        minPoint.y = std::min(std::min(p1.y, p2.y), p3.y);
-        maxPoint.x = std::max(std::max(p1.x, p2.x), p3.x);
-        maxPoint.y = std::max(std::max(p1.y, p2.y), p3.y);
+        minPoint.x = std::min(std::min(sp1.x, sp2.x), sp3.x);
+        minPoint.y = std::min(std::min(sp1.y, sp2.y), sp3.y);
+        maxPoint.x = std::max(std::max(sp1.x, sp2.x), sp3.x);
+        maxPoint.y = std::max(std::max(sp1.y, sp2.y), sp3.y);
         // 剔除边界外的三角形
-        if (minPoint.x > pixelWidth || minPoint.y > pixelHeight || maxPoint.x < 0 || maxPoint.y < 0)
-            return;
-        for (int y = minPoint.y; y < maxPoint.y; y++)
+        if (bounds.minPoint.x > pixelWidth || bounds.minPoint.y > pixelHeight || bounds.maxPoint.x < 0 || bounds.maxPoint.y < 0)
+            continue;
+
+        for (int sy = std::max(0.0f, bounds.minPoint.y); sy < std::min((float)pixelHeight, bounds.maxPoint.y); sy++)
         {
-            if (y < 0 || y >= pixelHeight)
-                continue;
-            for (int x = minPoint.x; x < maxPoint.x; x++)
+            for (int sx = std::max(0.0f, bounds.minPoint.x); sx < std::min((float)pixelWidth, bounds.maxPoint.x); sx++)
             {
-                if (x < 0 || x >= pixelWidth)
-                    continue;
-                Vector2 p(x, y);
-                Vector3 baryCoord = BarycentricCoordinate(p, p1, p2, p3);
+                Vector2 p(sx, sy);
+                Vector3 baryCoord = BarycentricCoordinate(p, sp1, sp2, sp3);
                 if (baryCoord[0] < 0 || baryCoord[1] < 0 || baryCoord[2] < 0)
                     continue;
-                float z = p1.z * baryCoord[0] + p2.z * baryCoord[1] + p3.z * baryCoord[2];
-                if (z < -1 || z > 1)
+                float sz = baryCoord * Vector3(sp1.z, sp2.z, sp3.z);
+                if (sz < -1 || sz > 1)
                     continue;
-                if (zBuffer[y][x] > z)
+                if (zBuffer[sy][sx] > sz)
                 {
-                    zBuffer[y][x] = z;
-                    screen.Set({x, y}, c);
+                    zBuffer[sy][sx] = sz;
+                    screen.Set(sx, sy, c);
                 }
             }
         }
@@ -202,7 +203,7 @@ void Camera::Output()
     char c;
     std::cout << "Output Z-Buffer Image?(Y/N)" << std::endl;
     std::cin >> c;
-    if (c == 'N')
+    if (c != 'Y')
         return;
     Bitmap zBufferImage(pixelWidth, pixelHeight, 8);
     for (int i = 0; i < pixelHeight; i++)

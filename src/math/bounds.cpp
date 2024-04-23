@@ -30,6 +30,16 @@ Bounds::Bounds(Vector3 p1, Vector3 p2, Vector3 p3)
     maxPoint.z = std::max(std::max(p1.z, p2.z), p3.z);
 }
 
+void Bounds::AddPoint(Vector3 p)
+{
+    minPoint.x = std::min(minPoint.x, p.x);
+    minPoint.y = std::min(minPoint.y, p.y);
+    minPoint.z = std::min(minPoint.z, p.z);
+    maxPoint.x = std::max(maxPoint.x, p.x);
+    maxPoint.y = std::max(maxPoint.y, p.y);
+    maxPoint.z = std::max(maxPoint.z, p.z);
+}
+
 Vector3 Bounds::center()
 {
     return (maxPoint + minPoint) / 2;

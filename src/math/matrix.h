@@ -7,7 +7,7 @@ template<int row, int col>
 struct Matrix
 {
     Matrix() {}
-    Matrix(std::vector<Vector<col, float>> rows[row])
+    Matrix(std::vector<Vector<col, float>> rows)
     {
         for (int i = 0; i < row; i++)
             m[i] = rows[i];
@@ -105,9 +105,9 @@ struct Matrix
     template<int r, int c, int n> 
     friend Matrix<r, c> operator *(const Matrix<r, n>& lhs, const Matrix<n, c>& rhs);
     template<int r, int c>
-    friend Vector<c, float> operator *(const Matrix<r, c>& lhs, const Vector<c, float>& v);
+    friend Vector<r, float> operator *(const Matrix<r, c>& lhs, const Vector<c, float>& v);
     template<int r, int c>
-    friend Vector<r, float> operator *(const Vector<r, float>& v, const Matrix<r, c>& rhs);
+    friend Vector<c, float> operator *(const Vector<r, float>& v, const Matrix<r, c>& rhs);
     template<int r, int c>
     friend Matrix<r, c> operator *(const Matrix<r, c>& m, float d);
     template<int r, int c>
@@ -170,9 +170,9 @@ Matrix<row, col> operator *(const Matrix<row, n>& lhs, const Matrix<n, col>& rhs
 }
 
 template<int row, int col>
-Vector<col, float> operator *(const Matrix<row, col>& lhs, const Vector<col, float>& v)
+Vector<row, float> operator *(const Matrix<row, col>& lhs, const Vector<col, float>& v)
 {
-    Vector<col, float> vec;
+    Vector<row, float> vec;
     for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < col; j++)
@@ -182,12 +182,12 @@ Vector<col, float> operator *(const Matrix<row, col>& lhs, const Vector<col, flo
 }
 
 template<int row, int col>
-Vector<row, float> operator *(const Vector<row, float>& v, const Matrix<row, col>& rhs)
+Vector<col, float> operator *(const Vector<row, float>& v, const Matrix<row, col>& rhs)
 {
-    Vector<row, float> vec;
-    for (int i = 0; i < row; i++)
+    Vector<col, float> vec;
+    for (int i = 0; i < col; i++)
     {
-        for (int j = 0; j < col; j++)
+        for (int j = 0; j < row; j++)
             vec[i] += v[j] * rhs.m[j][i];
     }
     return vec;
@@ -380,9 +380,9 @@ struct Matrix<n, n>
     template<int r, int c, int t> 
     friend Matrix<r, c> operator *(const Matrix<r, t>& lhs, const Matrix<t, c>& rhs);
     template<int r, int c>
-    friend Vector<c, float> operator *(const Matrix<r, c>& lhs, const Vector<c, float>& v);
+    friend Vector<r, float> operator *(const Matrix<r, c>& lhs, const Vector<c, float>& v);
     template<int r, int c>
-    friend Vector<r, float> operator *(const Vector<r, float>& v, const Matrix<r, c>& rhs);
+    friend Vector<c, float> operator *(const Vector<r, float>& v, const Matrix<r, c>& rhs);
     template<int r, int c>
     friend Matrix<r, c> operator *(const Matrix<r, c>& m, float d);
     template<int r, int c>

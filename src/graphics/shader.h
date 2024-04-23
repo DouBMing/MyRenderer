@@ -23,10 +23,10 @@ protected:
     Matrix4x4 M, V, P;
     Matrix4x4 worldToObject;
 
-    Vector3 WorldSpaceViewDir(Vector3 worldPos);
-    Vector3 ToWorldNormal(Vector3 normal);
-    Vector2 GetUV(Vector3 baryCoord, int faceIdx);
-    Vector3 GetWorldNormal(Vector3 baryCoord, int faceIdx);
+    Vector3 WorldSpaceViewDir(const Vector3& worldPos);
+    Vector3 ToWorldNormal(const Vector3& normal);
+    Vector2 GetUV(const Vector3& baryCoord, int faceIdx);
+    Vector3 GetWorldNormal(const Vector3& baryCoord, int faceIdx);
 };
 
 // 平面着色shader

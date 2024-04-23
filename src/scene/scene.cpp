@@ -23,6 +23,8 @@ Scene* Scene::current = nullptr;
 
 Scene::Scene(const std::string& scenePath)
 {
+    if (current != nullptr)
+        delete current;
     current = this;
 
     std::ifstream in;
@@ -57,16 +59,43 @@ Scene::Scene(const std::string& scenePath)
         if (prefix == "Camera:")
         {
             TObject = TCamera;
+            // 恢复默认值
+            position = Vector3();
+            rotation = Vector3();
+            scale = Vector3(1, 1, 1);
+            intensity = 1.0;
+            cLight = Color::White;
+            TShader = SNone;
+            specular = Color::White;
+            gloss = 20;
             continue;
         }
         if (prefix == "Light:")
         {
             TObject = TLight;
+            // 恢复默认值
+            position = Vector3();
+            rotation = Vector3();
+            scale = Vector3(1, 1, 1);
+            intensity = 1.0;
+            cLight = Color::White;
+            TShader = SNone;
+            specular = Color::White;
+            gloss = 20;
             continue;
         }
         if (prefix == "Model:")
         {
             TObject = TModel;
+            // 恢复默认值
+            position = Vector3();
+            rotation = Vector3();
+            scale = Vector3(1, 1, 1);
+            intensity = 1.0;
+            cLight = Color::White;
+            TShader = SNone;
+            specular = Color::White;
+            gloss = 20;
             continue;
         }
         if (prefix == "AmbientColor:")
@@ -182,6 +211,9 @@ Scene::Scene(const std::string& scenePath)
                             case SPhong:
                                 model->shader = new PhongShader(specular, gloss, model, *camera);
                                 break;
+                            case SBlinnPhong:
+                                model->shader = new BlinnPhongShader(specular, gloss, model, *camera);
+                                break;
                             case SHalfLambert:
                                 model->shader = new HalfLambertShader(specular, gloss, model, *camera);
                                 break;
@@ -190,15 +222,6 @@ Scene::Scene(const std::string& scenePath)
                     }
                     break;
             }
-            // 恢复默认值
-            position = Vector3();
-            rotation = Vector3();
-            scale = Vector3(1, 1, 1);
-            intensity = 1.0;
-            cLight = Color::White;
-            TShader = SNone;
-            specular = Color::White;
-            gloss = 20;
         }
     }
 }
